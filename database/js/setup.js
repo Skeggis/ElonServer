@@ -1,0 +1,59 @@
+require('dotenv').config()
+
+const fs = require('fs')
+const util = require('util')
+const { query } = require('./query')
+const readFileAsync = util.promisify(fs.readFile)
+
+const {
+  DB_PROGRAMS,
+  DB_SHOT_TYPES,
+  DB_ROUTINES,
+  DB_ROUTINE_DESCRIPTION
+} = process.env
+
+async function main() {
+
+  console.info('Initializing database')
+
+  await query(`DROP TABLE IF EXISTS
+  ${DB_PROGRAMS},
+  ${DB_SHOT_TYPES},
+  ${DB_ROUTINES},
+  ${DB_ROUTINE_DESCRIPTION}
+  `)
+
+  console.info('Tables dropped')
+
+  try {
+    const programs = await readFileAsync('./database/schemas/programs.sql')
+    const routines = await readFileAsync('./databse/schemas/routines.sql')
+    const routineDescription = await readFileAsync('./database/schemas/programs.sql')
+    const shotTypes = await readFileAsync('./database/schemas/shotTypes.sql')
+
+    await query(programs.toString('utf8'))
+    await query(routines.toString('utf8'))
+    await query(routineDescription.toString('utf8'))
+    await query(shotTypes.toString('utf8'))
+
+    console.info('Tables created')
+  } catch (e) {
+    console.error('Error creating tables', e.message)
+    return
+  }
+
+
+  try {
+    const insert = await readFileAsync('./database/schemas/insert.sql')
+    await query(insert.toString('utf8'))
+
+    console.info('Data inserted')
+  } catch (e) {
+    console.info('Error inserting data', e.message)
+  }
+
+}
+
+main().catch((err) => {
+  console.error(err);
+});

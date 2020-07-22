@@ -1,0 +1,1 @@
+insert into shot_types (name, horizontal, vertical, power) values ('Test', 20, 20, 100);
