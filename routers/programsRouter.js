@@ -44,7 +44,8 @@ const getProgramsRoute = async (req, res) => {
   const result = await getProgramsHandler()
   if(result.success){
     console.log('her')
-    res.status(200).json(result.programs)
+    console.log(result)
+    res.json(result.programs)
   } else {
     res.status(500).send('Something went wrong')
   }

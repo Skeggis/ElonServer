@@ -2,7 +2,7 @@ const formatProgram = program => {
   return {
     name: program.name,
     description: program.description,
-    author: program.description,
+    author: program.author,
     sets: program.sets,
     timeout: program.timeout,
     numShots: program.num_shots,
@@ -15,6 +15,7 @@ const formatPrograms = programs => {
   programs.forEach(program => {
     formattedPrograms.push(formatProgram(program))
   })
+  return formattedPrograms
 }
 
 const formatRoutine = routine => {

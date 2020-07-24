@@ -77,6 +77,8 @@ const getProgramsHandler = async () => {
     }
   }
 
+  console.log(programsResult.rows)
+
   return {
     success: true,
     programs: formatPrograms(programsResult.rows)
