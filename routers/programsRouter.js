@@ -4,7 +4,7 @@ const router = express.Router()
 const {
   insertProgramHandler,
   getProgramsHandler,
-  getRoutinesForProgram,
+  getProgramHandler,
   checkIfProgramExists
 } = require('../handlers/programsHandler')
 
@@ -45,39 +45,28 @@ const getProgramsRoute = async (req, res) => {
   if(result.success){
     console.log('her')
     console.log(result)
-    res.json(result.programs)
+    res.status(200).json(result)
   } else {
-    res.status(500).send('Something went wrong')
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong'
+    })
   }
 }
 
-const getRoutinesForProgramRoute = async (req, res) => {
+const getProgramRoute = async (req, res) => {
   const programId = req.params.id
-  const checkResult = await checkIfProgramExists(programId)
-
-  if(!checkResult){
-    return res.send(404).json({
-      result: false,
-      message: 'Program not found'
-    })
-  }
-  const result = await getRoutinesForProgram(programId)
+  const result = await getProgramHandler(programId)
 
   if(result.success){
-    res.send(200).json({
-      success: true,
-      result: result.routines
-    })
+    res.status(200).json(result)
   } else {
-    res.send(404).json({
-      success: false,
-      message: 'Routine not found'
-    })
+    res.status(404).json(result)
   }
 }
 
 router.get('/', getProgramsRoute)
 router.post('/', insertProgramRoute)
-router.get('/:id', getRoutinesForProgramRoute)
+router.get('/:id', getProgramRoute)
 
 module.exports = router

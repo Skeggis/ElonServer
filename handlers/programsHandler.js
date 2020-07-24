@@ -6,14 +6,14 @@ const {
   insertRoutinesDesc,
   getPrograms,
   getProgramById,
-  getRoutinesByProgramId
+  getRoutinesByProgramId,
+  getRoutineDescriptionByRoutineId
 } = require('../database/js/repositories/programsRepo')
 
 const {
   formatPrograms,
   formatRoutine,
-  formatProgramDesc,
-  formatRoutines
+  formatProgram
 } = require('../formatter')
 const { query } = require('express')
 const { transaction } = require('../database/js/query')
@@ -85,21 +85,34 @@ const getProgramsHandler = async () => {
   }
 }
 
-const getRoutinesForProgram = async (programId) => {
+const getProgramHandler = async (programId) => {
+  const programResult = await getProgramById(programId)
+  if(programResult.rowCount === 0){
+    return {
+      success: false,
+      message: 'Program not found'
+    }
+  }
+
+  const program = formatProgram(programResult.rows[0])
+
   const routinesResult = await getRoutinesByProgramId(programId)
 
   let routines = []
-  for(let i = 0; i<routinesResult.rows; i++){
+  for(let i = 0; i<routinesResult.rows.length; i++){
     const currentRoutine = routinesResult.rows[i]
     const descResult = await getRoutineDescriptionByRoutineId(currentRoutine.id)
+    console.log(descResult.rows)
     currentRoutine.routineDesc = descResult.rows
     routines.push(formatRoutine(currentRoutine))
   }
+
+  program.routines = routines
  
 
   return {
     success: true,
-    routines
+    result: program
   }
 }
 
@@ -111,6 +124,6 @@ const checkIfProgramExists = async programId => {
 module.exports = {
   insertProgramHandler,
   getProgramsHandler,
-  getRoutinesForProgram,
+  getProgramHandler,
   checkIfProgramExists
 }

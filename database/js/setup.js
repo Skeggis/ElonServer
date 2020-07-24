@@ -21,6 +21,7 @@ async function main() {
   ${DB_PROGRAMS},
   ${DB_ROUTINES},
   ${DB_ROUTINE_DESCRIPTIONS}
+  CASCADE
   `)
 
   console.info('Tables dropped')

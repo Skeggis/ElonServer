@@ -100,6 +100,8 @@ const getRoutinesByProgramId = async programId => {
 const getRoutineDescriptionByRoutineId = async routineId => {
   const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE id = $1`
   const result = await query(queryString, [routineId])
+  
+  return result
 }
 
 const getShotsByRoutineId = async routineId => {
