@@ -1,121 +1,85 @@
-const util = require('util')
-const fs = require('fs')
-const path = require('path')
-const readFileAsync = util.promisify(fs.readFile)
 const { query } = require('../query')
 
 const {
-  DB_PROGRAMS
+  DB_PROGRAMS,
+  DB_ROUTINES,
+  DB_ROUTINE_DESCRIPTION
 } = process.env
 
-const createProgram = async (program) => {
 
-  try {
-    await query('BEGIN')
-    console.log('Begin transaction')
-
-    const insertProgramString = `INSERT INTO ${DB_PROGRAMS}
-    (name, description, author, sets, timeout, total_time, num_shots)
+const insertProgram = async (client = null, program) => {
+  const insertQuery = `INSERT INTO ${DB_PROGRAMS}
+    (name, description, author, total_time, num_shots, sets, timeout)
     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`
+  const insertValues = [
+    program.name,
+    program.description,
+    program.author,
+    program.totalTime,
+    program.numShots,
+    program.sets,
+    program.timeout
+  ]
 
-    let numShots = 0
-    let totalTime = 0
-    program.programDesc.forEach(programDesc => {
-      
-      let routineTime = 0
-      programDesc.routineDesc.forEach(routineDesc => {
-        routineTime += routineDesc.timeout
-      })
-
-      totalTime += (routineTime*programDesc.rounds + programDesc.timeout)
-      numShots += programDesc.routineDesc.length*programDesc.rounds
-    });
-
-    totalTime = (totalTime + program.timeout) * program.sets
-    numShots *= program.sets
-
-
-    const insertProgramValues = [
-      program.name,
-      program.description,
-      program.author,
-      program.sets,
-      program.timeout,
-      totalTime,
-      numShots
-    ]
-    const insertProgramResult = await query(insertProgramString, insertProgramValues)
-    if (insertProgramResult.rowCount === 0) {
-      return { success: false, message: 'Creating program failed' }
-    }
-
-    const programDescTableName = await createProgramDesc(insertProgramResult.rows[0])
-    await insertProgramDesc(program.programDesc, programDescTableName, insertProgramResult.rows[0].id)
-
-
-    const insertTableNameQueryString = `UPDATE ${DB_PROGRAMS} SET program_desc_table_name = $1 WHERE id = $2`
-    const insertTableNameValues = [programDescTableName, insertProgramResult.rows[0].id]
-    const insertTableNameResult = await query(insertTableNameQueryString, insertTableNameValues)
-
-    await query('COMMIT')
-  } catch (e) {
-    console.log('Rollback', e)
-    await query('ROLLBACK')
-    return { success: false }
+  let result
+  if (client) {
+    result = await client.query(insertQuery, insertValues)
+  } else {
+    result = await query(insertQuery, insertValues)
   }
-  return {success: true}
+  return result
 }
 
-const createProgramDesc = async (sqlRow) => {
-  const programDescColumns = await readFileAsync(path.join(__dirname, '../../schemas/programDescColumns.sql'))
-  
-  const programDescTableName = `program_desc_${sqlRow.id}`
-  const createTableQueryString = `CREATE TABLE ${programDescTableName} ${programDescColumns.toString('utf8')}`
-  console.log(createTableQueryString)
-  
-  await query(createTableQueryString)
-  console.log('programDescTable created')
-
-  return programDescTableName
-}
-
-const insertProgramDesc = async (programDesc, tableName, programId) => {
-  for (let i = 0; i < programDesc.length; i++) {
-    const currentProgram = programDesc[i]
-    const insertQueryString = `INSERT INTO ${tableName} (rounds, timeout) VALUES ($1, $2) RETURNING *`
-    const insertValues = [currentProgram.rounds, currentProgram.timeout]
-    const insertResult = await query(insertQueryString, insertValues)
-
-    const routineTableName = await createRoutineDesc(insertResult.rows[0].id, programId)
-    const updateTableNameQueryString = `UPDATE ${tableName} SET routine_desc_table_name = $1 WHERE id = $2`
-    const updateTableNameValues = [routineTableName, insertResult.rows[0].id]
-    await query(updateTableNameQueryString, updateTableNameValues)
-    await insertRoutineDesc(routineTableName, currentProgram.routineDesc)
-  }
-}
-
-const createRoutineDesc = async (routineId, programId) => {
-  const routineTableName = `routine_desc_${routineId}_for_program_${programId}`
-  const routineDescColumn = await readFileAsync(path.join(__dirname, '../../schemas/routineDescColumns.sql'))
-  const createRoutineQueryString = `CREATE TABLE ${routineTableName} ${routineDescColumn.toString('utf8')}`
-  await query(createRoutineQueryString)
-
-  return routineTableName
-}
-
-const insertRoutineDesc = async (routineTableName, routineDesc) => {
-  let insertQuery = `INSERT INTO ${routineTableName} (shot_type, timeout) VALUES `
-  let insertValues = []
-  for (let i = 0; i < routineDesc.length; i++) {
-    const currentRoutine = routineDesc[i]
-    if (i === routineDesc.length - 1) {
-      insertQuery = insertQuery.concat(`($${i*2 + 1}, $${i*2 + 2})`)
+const insertRoutines = async (client = null, routines, programId) => {
+  let insertQuery = `INSERT INTO ${DB_ROUTINES} (rounds, timeout, ordering, program_id) VALUES `
+  const insertValues = []
+  for (let i = 0; i < routines.length; i++) {
+    const currRoutine = routines[i]
+    if (i === routines.length - 1) {
+      insertQuery = insertQuery.concat(`($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`)
     } else {
-      insertQuery = insertQuery.concat(`($${i*2 + 1}, $${i*2 + 2}), `)
+      insertQuery = insertQuery.concat(`($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4}), `)
     }
-    insertValues.push(currentRoutine.shotType, currentRoutine.timeout)
+    insertValues.push(currRoutine.rounds, currRoutine.timeout, i + 1, programId)
   }
-  await query(insertQuery, insertValues)
+  insertQuery = insertQuery.concat('RETURNING *')
+
+  let result
+  if (client) {
+    result = await client.query(insertQuery, insertValues)
+  } else {
+    result = await query(insertQuery, insertValues)
+  }
+  return result
+}
+
+const insertRoutinesDesc = async (client = null, routines, routinesRows) => {
+  let insertQuery = `INSERT INTO ${DB_ROUTINE_DESCRIPTION} (shot_type, timeout, routine_id, ordering) VALUES `
+  let insertValues = []
+  let counter = 0
+  for (let i = 0; i < routines.length; i++) {
+    const currRoutine = routines[i]
+    const routineId = routinesRows[i].id
+    for (let j = 0; j < currRoutine.routineDesc.length; j++) {
+      const currDesc = currRoutine.routineDesc[j]
+      if (i === routines.length - 1 && j === currRoutine.routineDesc.length - 1) {
+        insertQuery = insertQuery.concat(`($${counter + 1}, $${counter + 2}, $${counter + 3}, $${counter + 4})`)
+      } else {
+        insertQuery = insertQuery.concat(`($${counter + 1}, $${counter + 2}, $${counter + 3}, $${counter + 4}), `)
+      }
+      insertValues.push(currDesc.shotType, currDesc.timeout, routineId, j + 1)
+      counter += 4
+    }
+  }
+  insertQuery = insertQuery.concat(' RETURNING *')
+
+  let result
+  if (client) {
+    result = await client.query(insertQuery, insertValues)
+  } else {
+    result = await query(insertQuery, insertValues)
+  }
+  return result
 }
 
 
@@ -126,24 +90,34 @@ const getPrograms = async () => {
   return programResult
 }
 
-const getProgramDesc = async tableName => {
-  const queryString = `SELECT * FROM ${tableName}`
-  console.log(queryString)
-  const result = await query(queryString)
+const getRoutinesByProgramId = async programId => {
+  const queryString = `SELECT * FROM ${DB_ROUTINES} WHERE id = $1 ORDER BY ordering`
+  const result = await query(queryString, [programId])
 
   return result
 }
 
-const getRoutineDesc = async tableName => {
-  const queryString = `SELECT * FROM ${tableName}`
-  const result = await query(queryString)
+const getRoutineDescriptionByRoutineId = async routineId => {
+  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTION} WHERE id = $1`
+  const result = await query(queryString, [routineId])
+}
 
+const getShotsByRoutineId = async routineId => {
+  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTION} WHERE routine_id = $1 ORDER BY ordering`
+}
+
+const getProgramById = async programId => {
+  const queryString = `SELECT * FROM ${DB_PROGRAMS} WHERE id = $1`
+  const result = await query(queryString, [programId])
   return result
 }
 
 module.exports = {
-  createProgram,
+  insertProgram,
+  insertRoutines,
+  insertRoutinesDesc,
   getPrograms,
-  getProgramDesc,
-  getRoutineDesc
+  getProgramById,
+  getRoutinesByProgramId,
+  getRoutineDescriptionByRoutineId
 }

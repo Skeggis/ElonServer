@@ -1,6 +1,4 @@
 const formatProgram = program => {
-
-  const formattedProgramDesc = formatProgramDesc(program.programDesc)
   return {
     name: program.name,
     description: program.description,
@@ -9,29 +7,39 @@ const formatProgram = program => {
     timeout: program.timeout,
     numShots: program.num_shots,
     totalTime: program.total_time,
-    programDesc: formattedProgramDesc
   }
 }
 
-const formatProgramDesc = programDesc => {
-  let formattedProgramDesc = []
-  programDesc.forEach(desc => {
-    const formattedRoutineDesc = formatRoutineDesc(desc.routineDesc)
-    formattedProgramDesc.push({
-      rounds: desc.rounds,
-      timeout: desc.timeout,
-      routineDesc: formattedRoutineDesc
-    })
+const formatPrograms = programs => {
+  let formattedPrograms = []
+  programs.forEach(program => {
+    formattedPrograms.push(formatProgram(program))
   })
-  return formattedProgramDesc
 }
+
+const formatRoutine = routine => {
+  const formattedRoutineDesc = formatRoutineDesc(routine.routineDesc)
+  return {
+    id: routine.id,
+    rounds: routine.rounds,
+    timeout: routine.timeout,
+    ordering: routine.ordering,
+    programId: routine.programId,
+    created: routine.created,
+    routineDesc: formattedRoutineDesc
+  }
+}
+
 
 const formatRoutineDesc = routineDesc => {
   let formattedRoutineDesc = []
   routineDesc.forEach(desc => {
     formattedRoutineDesc.push({
+      id: desc.id,
       shotType: desc.shot_type,
-      timeout: desc.timeout
+      timeout: desc.timeout,
+      ordering: desc.ordering,
+      created: desc.created
     })
   })
   return formattedRoutineDesc
@@ -39,6 +47,7 @@ const formatRoutineDesc = routineDesc => {
 
 module.exports = {
   formatProgram,
-  formatProgramDesc,
+  formatPrograms,
+  formatRoutine,
   formatRoutineDesc
 }

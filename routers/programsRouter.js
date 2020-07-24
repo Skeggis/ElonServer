@@ -2,10 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 const {
-  createProgramHandler,
+  insertProgramHandler,
   getProgramsHandler,
+  getRoutinesForProgram,
+  checkIfProgramExists
 } = require('../handlers/programsHandler')
-const { getPrograms } = require('../database/js/repositories/programsRepo')
 
 
 
@@ -16,7 +17,7 @@ const { getPrograms } = require('../database/js/repositories/programsRepo')
  *    author: String,
  *    sets: integer,
  *    timeout: integer, //time between sets in seconds
- *    programDesc: [
+ *    routines: [
  *      {
  *        rounds: integer,
  *        timeout: integer, //time in seconds between rounds
@@ -28,27 +29,54 @@ const { getPrograms } = require('../database/js/repositories/programsRepo')
  *    ]
  * }
  */
-const createProgramRoute = async (req, res) => {
+const insertProgramRoute = async (req, res) => {
   const program = req.body.program
 
-  const result = await createProgramHandler(program)
+  const result = await insertProgramHandler(program)
   if(result.success){
-    res.status(200).send('created')
+    res.status(200).json(result)
   } else {
-    res.status(500).send('Something went wrong')
+    res.status(500).json(result)
   }
 }
 
 const getProgramsRoute = async (req, res) => {
   const result = await getProgramsHandler()
   if(result.success){
-    res.status(200).send(result.programs)
+    console.log('her')
+    res.status(200).json(result.programs)
   } else {
     res.status(500).send('Something went wrong')
   }
 }
 
+const getRoutinesForProgramRoute = async (req, res) => {
+  const programId = req.params.id
+  const checkResult = await checkIfProgramExists(programId)
+
+  if(!checkResult){
+    return res.send(404).json({
+      result: false,
+      message: 'Program not found'
+    })
+  }
+  const result = await getRoutinesForProgram(programId)
+
+  if(result.success){
+    res.send(200).json({
+      success: true,
+      result: result.routines
+    })
+  } else {
+    res.send(404).json({
+      success: false,
+      message: 'Routine not found'
+    })
+  }
+}
+
 router.get('/', getProgramsRoute)
-router.post('/', createProgramRoute)
+router.post('/', insertProgramRoute)
+router.get('/:id', getRoutinesForProgramRoute)
 
 module.exports = router

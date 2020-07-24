@@ -1,45 +1,114 @@
+const _ = require('lodash')
+
 const {
-  createProgram,
+  insertProgram,
+  insertRoutines,
+  insertRoutinesDesc,
   getPrograms,
-  getProgramDesc,
-  getRoutineDesc
+  getProgramById,
+  getRoutinesByProgramId
 } = require('../database/js/repositories/programsRepo')
 
-const { formatProgram } = require('../formatter')
+const {
+  formatPrograms,
+  formatRoutine,
+  formatProgramDesc,
+  formatRoutines
+} = require('../formatter')
+const { query } = require('express')
+const { transaction } = require('../database/js/query')
 
-const createProgramHandler = async (program) => {
-  const result = await createProgram(program)
-  return result
+const insertProgramHandler = async (program) => {
+  const programTime = calculateProgramTime(program)
+  const programShots = calculateProgramShots(program)
+  program.totalTime = programTime
+  program.numShots = programShots
+
+
+  const transactionResult = await transaction(async client => {
+    const insertProgramResult = await insertProgram(client, program)
+    const insertRoutinesResult = await insertRoutines(client, program.routines, insertProgramResult.rows[0].id)
+    await insertRoutinesDesc(client, program.routines, insertRoutinesResult.rows)
+  })
+
+  if (transactionResult.success) {
+    return {
+      success: transactionResult.success,
+      message: 'Successfully created program'
+    }
+  } else {
+    return {
+      success: transactionResult.success,
+      message: 'Error inserting program'
+    }
+  }
+}
+
+const calculateProgramShots = (program) => {
+  let totalShots = 0
+  program.routines.forEach(routine => {
+    totalShots += routine.rounds * routine.routineDesc.length
+  })
+  return totalShots * program.sets
+}
+
+const calculateProgramTime = (program) => {
+  let totalTime = 0
+  program.routines.forEach(routine => {
+    let routineTime = 0
+
+    routine.routineDesc.forEach(desc => {
+      routineTime += desc.timeout
+    })
+
+    totalTime += routine.timeout + routine.rounds * routineTime
+  });
+
+  return totalTime * program.sets
 }
 
 const getProgramsHandler = async () => {
-  const result = await getPrograms()
-  const programs = result.rows
-  let returnPrograms = []
+  const programsResult = await getPrograms()
 
-  for (let i = 0; i < programs.length; i++) {
-    let currentProgram = programs[i]
-    const programDescResult = await getProgramDesc(currentProgram.program_desc_table_name)
-    const programDesc = programDescResult.rows
-
-    for (let i = 0; i < programDesc.length; i++) {
-      const routineDescResult = await getRoutineDesc(programDescResult.rows[i].routine_desc_table_name)
-      const routineDesc = routineDescResult.rows
-      programDesc[i].routineDesc = routineDesc
+  if (programsResult.rowCount === 0) {
+    return {
+      success: false,
+      message: 'No programs found'
     }
-
-    currentProgram.programDesc = programDesc
-    returnPrograms.push(formatProgram(currentProgram))
   }
-
 
   return {
     success: true,
-    programs: returnPrograms
+    programs: formatPrograms(programsResult.rows)
   }
 }
 
+const getRoutinesForProgram = async (programId) => {
+  const routinesResult = await getRoutinesByProgramId(programId)
+
+  let routines = []
+  for(let i = 0; i<routinesResult.rows; i++){
+    const currentRoutine = routinesResult.rows[i]
+    const descResult = await getRoutineDescriptionByRoutineId(currentRoutine.id)
+    currentRoutine.routineDesc = descResult.rows
+    routines.push(formatRoutine(currentRoutine))
+  }
+ 
+
+  return {
+    success: true,
+    routines
+  }
+}
+
+const checkIfProgramExists = async programId => {
+  const programResult = await getProgramById(programId)
+  return programResult.rowCount !== 0
+}
+
 module.exports = {
-  createProgramHandler,
-  getProgramsHandler
+  insertProgramHandler,
+  getProgramsHandler,
+  getRoutinesForProgram,
+  checkIfProgramExists
 }

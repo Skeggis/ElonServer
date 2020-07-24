@@ -1,4 +1,4 @@
-const { Client } = require('pg')
+const { Client, Pool } = require('pg')
 
 async function query(query, values = []) {
   const connectionString = process.env.DATABASE_URL
@@ -19,6 +19,33 @@ async function query(query, values = []) {
   return result
 }
 
+async function transaction(callback){
+  const connectionString = process.env.DATABASE_URL
+
+  const pool = new Pool({connectionString})
+  const client = await pool.connect()
+
+  try{
+    await client.query('BEGIN')
+    try{
+      await callback(client)
+      client.query('COMMIT')
+      return{
+        success: true
+      }
+    } catch(e){
+      console.error('Error in transaction', e)
+      client.query('ROLLBACK')
+      return {
+        success: false
+      }
+    }
+  } finally {
+    client.release()
+  }
+}
+
 module.exports = {
-  query
+  query,
+  transaction
 }

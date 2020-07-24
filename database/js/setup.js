@@ -17,8 +17,8 @@ async function main() {
   console.info('Initializing database')
 
   await query(`DROP TABLE IF EXISTS
-  ${DB_PROGRAMS},
   ${DB_SHOT_TYPES},
+  ${DB_PROGRAMS},
   ${DB_ROUTINES},
   ${DB_ROUTINE_DESCRIPTION}
   `)
@@ -26,15 +26,15 @@ async function main() {
   console.info('Tables dropped')
 
   try {
-    const programs = await readFileAsync('./database/schemas/programs.sql')
-    const routines = await readFileAsync('./databse/schemas/routines.sql')
-    const routineDescription = await readFileAsync('./database/schemas/programs.sql')
     const shotTypes = await readFileAsync('./database/schemas/shotTypes.sql')
+    const programs = await readFileAsync('./database/schemas/programs.sql')
+    const routines = await readFileAsync('./database/schemas/routines.sql')
+    const routineDescription = await readFileAsync('./database/schemas/routineDescription.sql')
 
+    await query(shotTypes.toString('utf8'))
     await query(programs.toString('utf8'))
     await query(routines.toString('utf8'))
     await query(routineDescription.toString('utf8'))
-    await query(shotTypes.toString('utf8'))
 
     console.info('Tables created')
   } catch (e) {
