@@ -9,7 +9,7 @@ const {
   DB_PROGRAMS,
   DB_SHOT_TYPES,
   DB_ROUTINES,
-  DB_ROUTINE_DESCRIPTION
+  DB_ROUTINE_DESCRIPTIONS
 } = process.env
 
 async function main() {
@@ -20,7 +20,7 @@ async function main() {
   ${DB_SHOT_TYPES},
   ${DB_PROGRAMS},
   ${DB_ROUTINES},
-  ${DB_ROUTINE_DESCRIPTION}
+  ${DB_ROUTINE_DESCRIPTIONS}
   `)
 
   console.info('Tables dropped')

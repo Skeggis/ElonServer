@@ -3,7 +3,7 @@ const { query } = require('../query')
 const {
   DB_PROGRAMS,
   DB_ROUTINES,
-  DB_ROUTINE_DESCRIPTION
+  DB_ROUTINE_DESCRIPTIONS
 } = process.env
 
 
@@ -54,7 +54,7 @@ const insertRoutines = async (client = null, routines, programId) => {
 }
 
 const insertRoutinesDesc = async (client = null, routines, routinesRows) => {
-  let insertQuery = `INSERT INTO ${DB_ROUTINE_DESCRIPTION} (shot_type, timeout, routine_id, ordering) VALUES `
+  let insertQuery = `INSERT INTO ${DB_ROUTINE_DESCRIPTIONS} (shot_type, timeout, routine_id, ordering) VALUES `
   let insertValues = []
   let counter = 0
   for (let i = 0; i < routines.length; i++) {
@@ -98,12 +98,12 @@ const getRoutinesByProgramId = async programId => {
 }
 
 const getRoutineDescriptionByRoutineId = async routineId => {
-  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTION} WHERE id = $1`
+  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE id = $1`
   const result = await query(queryString, [routineId])
 }
 
 const getShotsByRoutineId = async routineId => {
-  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTION} WHERE routine_id = $1 ORDER BY ordering`
+  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE routine_id = $1 ORDER BY ordering`
 }
 
 const getProgramById = async programId => {
