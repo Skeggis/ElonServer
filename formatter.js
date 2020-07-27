@@ -1,5 +1,6 @@
 const formatProgram = program => {
   return {
+    id: program.id,
     name: program.name,
     description: program.description,
     author: program.author,
