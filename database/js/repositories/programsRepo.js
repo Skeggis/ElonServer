@@ -93,14 +93,14 @@ const getPrograms = async () => {
 }
 
 const getRoutinesByProgramId = async programId => {
-  const queryString = `SELECT * FROM ${DB_ROUTINES} WHERE id = $1 ORDER BY ordering`
+  const queryString = `SELECT * FROM ${DB_ROUTINES} WHERE program_id = $1 ORDER BY ordering`
   const result = await query(queryString, [programId])
 
   return result
 }
 
 const getRoutineDescriptionByRoutineId = async routineId => {
-  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE id = $1`
+  const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE routine_id = $1`
   const result = await query(queryString, [routineId])
 
   return result

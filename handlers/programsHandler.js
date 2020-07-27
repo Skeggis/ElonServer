@@ -106,6 +106,7 @@ const getProgramHandler = async (programId) => {
     const currentRoutine = routinesResult.rows[i]
     const descResult = await getRoutineDescriptionByRoutineId(currentRoutine.id)
     let desc = []
+    console.log('descresult',descResult.rows.length)
     for(let j = 0; j<descResult.rows.length; j++){
       const currentShot = descResult.rows[j]
       const shotResult = await getShotById(currentShot.shot_type)
