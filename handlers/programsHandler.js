@@ -7,13 +7,16 @@ const {
   getPrograms,
   getProgramById,
   getRoutinesByProgramId,
-  getRoutineDescriptionByRoutineId
+  getRoutineDescriptionByRoutineId,
+  getShotById,
+  getShotLocation
 } = require('../database/js/repositories/programsRepo')
 
 const {
   formatPrograms,
   formatRoutine,
-  formatProgram
+  formatProgram,
+  formatShot
 } = require('../formatter')
 const { query } = require('express')
 const { transaction } = require('../database/js/query')
@@ -102,8 +105,18 @@ const getProgramHandler = async (programId) => {
   for(let i = 0; i<routinesResult.rows.length; i++){
     const currentRoutine = routinesResult.rows[i]
     const descResult = await getRoutineDescriptionByRoutineId(currentRoutine.id)
-    console.log(descResult.rows)
-    currentRoutine.routineDesc = descResult.rows
+    let desc = []
+    for(let j = 0; j<descResult.rows.length; j++){
+      const currentShot = descResult.rows[j]
+      const shotResult = await getShotById(currentShot.shot_type)
+      const shotLocation = await getShotLocation(shotResult.rows[0].shot_location_id)
+      const shot = shotResult.rows[0]
+      shot.shotLocation = shotLocation.rows[0].image
+      currentShot.shot = shot
+      desc.push(currentShot)
+    }
+    currentRoutine.routineDesc = desc
+    console.log(currentRoutine)
     routines.push(formatRoutine(currentRoutine))
   }
 

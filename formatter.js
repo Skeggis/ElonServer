@@ -36,20 +36,34 @@ const formatRoutine = routine => {
 const formatRoutineDesc = routineDesc => {
   let formattedRoutineDesc = []
   routineDesc.forEach(desc => {
+    const shot = formatShot(desc.shot)
     formattedRoutineDesc.push({
       id: desc.id,
       shotType: desc.shot_type,
       timeout: desc.timeout,
       ordering: desc.ordering,
-      created: desc.created
+      created: desc.created,
+      shot
     })
   })
   return formattedRoutineDesc
+}
+
+const formatShot = shot => {
+  return {
+    id: shot.id,
+    name: shot.name,
+    horizontal: shot.horizontal,
+    vertical: shot.vertical,
+    power: shot.power,
+    image: shot.image
+  }
 }
 
 module.exports = {
   formatProgram,
   formatPrograms,
   formatRoutine,
-  formatRoutineDesc
+  formatRoutineDesc,
+  formatShot
 }

@@ -19,7 +19,7 @@ async function main() {
 
   await query(`DROP TABLE IF EXISTS
   ${DB_SHOT_TYPES},
-  ${DB_SHOT_LOCATIONS}
+  ${DB_SHOT_LOCATIONS},
   ${DB_PROGRAMS},
   ${DB_ROUTINES},
   ${DB_ROUTINE_DESCRIPTIONS}
@@ -29,14 +29,14 @@ async function main() {
   console.info('Tables dropped')
 
   try {
-    const shotTypes = await readFileAsync('./database/schemas/shotTypes.sql')
     const shotLocations = await readFileAsync('./database/schemas/shotLocations.sql')
+    const shotTypes = await readFileAsync('./database/schemas/shotTypes.sql')
     const programs = await readFileAsync('./database/schemas/programs.sql')
     const routines = await readFileAsync('./database/schemas/routines.sql')
     const routineDescription = await readFileAsync('./database/schemas/routineDescription.sql')
 
-    await query(shotTypes.toString('utf8'))
     await query(shotLocations.toString('utf8'))
+    await query(shotTypes.toString('utf8'))
     await query(programs.toString('utf8'))
     await query(routines.toString('utf8'))
     await query(routineDescription.toString('utf8'))

@@ -3,7 +3,9 @@ const { query } = require('../query')
 const {
   DB_PROGRAMS,
   DB_ROUTINES,
-  DB_ROUTINE_DESCRIPTIONS
+  DB_ROUTINE_DESCRIPTIONS,
+  DB_SHOT_TYPES,
+  DB_SHOT_LOCATIONS
 } = process.env
 
 
@@ -100,7 +102,7 @@ const getRoutinesByProgramId = async programId => {
 const getRoutineDescriptionByRoutineId = async routineId => {
   const queryString = `SELECT * FROM ${DB_ROUTINE_DESCRIPTIONS} WHERE id = $1`
   const result = await query(queryString, [routineId])
-  
+
   return result
 }
 
@@ -114,6 +116,18 @@ const getProgramById = async programId => {
   return result
 }
 
+const getShotById = async shotId => {
+  const queryString = `SELECT * FROM ${DB_SHOT_TYPES} WHERE id = $1`
+  const result = await query(queryString, [shotId])
+  return result
+}
+
+const getShotLocation = async locationId => {
+  const queryString = `SELECT * FROM ${DB_SHOT_LOCATIONS} WHERE id = $1`
+  const result = await query(queryString, [locationId])
+  return result
+}
+
 module.exports = {
   insertProgram,
   insertRoutines,
@@ -121,5 +135,7 @@ module.exports = {
   getPrograms,
   getProgramById,
   getRoutinesByProgramId,
-  getRoutineDescriptionByRoutineId
+  getRoutineDescriptionByRoutineId,
+  getShotById,
+  getShotLocation
 }
