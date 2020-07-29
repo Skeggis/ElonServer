@@ -6,6 +6,6 @@ create table programs (
   total_time integer not null,
   num_shots integer not null,
   sets integer not null,
-  timeout integer not null,
+  set_timeout integer not null,
   created timestamp default current_timestamp
 );

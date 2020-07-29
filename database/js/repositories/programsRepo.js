@@ -5,7 +5,8 @@ const {
   DB_ROUTINES,
   DB_ROUTINE_DESCRIPTIONS,
   DB_SHOT_TYPES,
-  DB_SHOT_LOCATIONS
+  DB_SHOT_LOCATIONS,
+  DB_SHOTS
 } = process.env
 
 
@@ -93,7 +94,17 @@ const getPrograms = async () => {
 }
 
 const getRoutinesByProgramId = async programId => {
-  const queryString = `SELECT * FROM ${DB_ROUTINES} WHERE program_id = $1 ORDER BY ordering`
+  const queryString = 
+    `SELECT t.name as type_name, l.name as location_name, * FROM 
+      ${DB_ROUTINES} r INNER JOIN ${DB_ROUTINE_DESCRIPTIONS} d
+      ON r.id = d.routine_id
+      INNER JOIN ${DB_SHOTS} s
+      ON d.shot_id = s.id
+      INNER JOIN ${DB_SHOT_LOCATIONS} l
+      ON s.shot_location_id = l.id
+      INNER JOIN ${DB_SHOT_TYPES} t
+      ON s.shot_type_id = t.id
+      WHERE r.program_id = $1 ORDER BY r.ordering, d.ordering`
   const result = await query(queryString, [programId])
 
   return result

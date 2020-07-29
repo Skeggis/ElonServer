@@ -16,10 +16,12 @@ const {
   formatPrograms,
   formatRoutine,
   formatProgram,
-  formatShot
+  formatShot,
+  formatRoutineDesc
 } = require('../formatter')
 const { query } = require('express')
 const { transaction } = require('../database/js/query')
+const { groupByArray } = require('../helpers')
 
 const insertProgramHandler = async (program) => {
   const programTime = calculateProgramTime(program)
@@ -90,7 +92,7 @@ const getProgramsHandler = async () => {
 
 const getProgramHandler = async (programId) => {
   const programResult = await getProgramById(programId)
-  if(programResult.rowCount === 0){
+  if (programResult.rowCount === 0) {
     return {
       success: false,
       message: 'Program not found'
@@ -101,28 +103,25 @@ const getProgramHandler = async (programId) => {
 
   const routinesResult = await getRoutinesByProgramId(programId)
 
+  const sortedRoutineResult = groupByArray(routinesResult.rows, 'routine_id')
+
   let routines = []
-  for(let i = 0; i<routinesResult.rows.length; i++){
-    const currentRoutine = routinesResult.rows[i]
-    const descResult = await getRoutineDescriptionByRoutineId(currentRoutine.id)
-    let desc = []
-    console.log('descresult',descResult.rows.length)
-    for(let j = 0; j<descResult.rows.length; j++){
-      const currentShot = descResult.rows[j]
-      const shotResult = await getShotById(currentShot.shot_type)
-      const shotLocation = await getShotLocation(shotResult.rows[0].shot_location_id)
-      const shot = shotResult.rows[0]
-      shot.shotLocation = shotLocation.rows[0].image
-      currentShot.shot = shot
-      desc.push(currentShot)
-    }
-    currentRoutine.routineDesc = desc
-    console.log(currentRoutine)
-    routines.push(formatRoutine(currentRoutine))
-  }
+  sortedRoutineResult.forEach(res => {
+    let routineDesc = []
+    res.values.forEach(desc => {
+      routineDesc.push(formatShot(desc))
+    })
+
+    let formattedRoutine = formatRoutine(res.values[0])
+    formattedRoutine.routineDesc = routineDesc
+
+    routines.push(formattedRoutine)
+  })
+
+
 
   program.routines = routines
- 
+
 
   return {
     success: true,

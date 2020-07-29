@@ -5,7 +5,7 @@ const formatProgram = program => {
     description: program.description,
     author: program.author,
     sets: program.sets,
-    timeout: program.timeout,
+    timeout: program.sets_timeout,
     numShots: program.num_shots,
     totalTime: program.total_time,
   }
@@ -20,43 +20,25 @@ const formatPrograms = programs => {
 }
 
 const formatRoutine = routine => {
-  const formattedRoutineDesc = formatRoutineDesc(routine.routineDesc)
   return {
-    id: routine.id,
+    id: routine.routine_id,
     rounds: routine.rounds,
-    timeout: routine.timeout,
-    ordering: routine.ordering,
-    programId: routine.programId,
-    created: routine.created,
-    routineDesc: formattedRoutineDesc
+    timeout: routine.rounds_timeout,
   }
 }
 
 
-const formatRoutineDesc = routineDesc => {
-  let formattedRoutineDesc = []
-  routineDesc.forEach(desc => {
-    const shot = formatShot(desc.shot)
-    formattedRoutineDesc.push({
-      id: desc.id,
-      shotType: desc.shot_type,
-      timeout: desc.timeout,
-      ordering: desc.ordering,
-      created: desc.created,
-      shot
-    })
-  })
-  return formattedRoutineDesc
-}
+
 
 const formatShot = shot => {
   return {
-    id: shot.id,
-    name: shot.name,
+    typeName: shot.type_name,
+    locationName: shot.location_name,
+    locationId: shot.shot_location_id,
     horizontal: shot.horizontal,
     vertical: shot.vertical,
     power: shot.power,
-    image: shot.image
+    timeout: shot.shot_timeout
   }
 }
 
@@ -64,6 +46,5 @@ module.exports = {
   formatProgram,
   formatPrograms,
   formatRoutine,
-  formatRoutineDesc,
   formatShot
 }

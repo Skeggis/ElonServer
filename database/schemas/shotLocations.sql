@@ -1,4 +1,4 @@
 create table shot_locations (
   id serial primary key,
-  image text not null
+  name varchar(255) not null
 );
