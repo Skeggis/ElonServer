@@ -5,7 +5,7 @@ const formatProgram = program => {
     description: program.description,
     author: program.author,
     sets: program.sets,
-    timeout: program.sets_timeout,
+    timeout: program.set_timeout,
     numShots: program.num_shots,
     totalTime: program.total_time,
   }
