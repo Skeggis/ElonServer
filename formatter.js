@@ -23,7 +23,7 @@ const formatRoutine = routine => {
   return {
     id: routine.routine_id,
     rounds: routine.rounds,
-    timeout: routine.rounds_timeout,
+    timeout: routine.round_timeout,
   }
 }
 
