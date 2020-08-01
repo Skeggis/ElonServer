@@ -14,7 +14,7 @@ const getUserByEmail = async (email) => {
 
 const insertUser = async (user = {email, uuid, password}) => {
     const query = `INSERT INTO ${DB_USERS} (email, uuid, password) = ($1,$2,$3) returning *`
-    const result = await query(query, [user.email, user.uuid, user.password])
+    const result = await query(query, [user.email.toLowerCase(), user.uuid, user.password])
     return result
 }
 
