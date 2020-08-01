@@ -13,6 +13,7 @@ const getUserByEmail = async (email) => {
 
 
 const insertUser = async (user = {email, uuid, password}) => {
+    console.log("USER: ", user)
     const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password) = ($1,$2,$3) returning *`
     const result = await query(usersQuery, [user.email.toLowerCase(), user.uuid, user.password])
     return result
