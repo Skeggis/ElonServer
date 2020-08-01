@@ -45,9 +45,22 @@ const formatShot = shot => {
   }
 }
 
+const formatUser = user => {
+  return {
+    uuid: user.uuid,
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    password: user.password, //hashed
+    organization_id: user.organization_id,
+    created: user.created
+  }
+}
+
 module.exports = {
   formatProgram,
   formatPrograms,
   formatRoutine,
-  formatShot
+  formatShot,
+  formatUser
 }
