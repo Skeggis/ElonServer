@@ -17,7 +17,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/programs', programRouter)
-app.user('/users', usersRouter)
+app.use('/users', usersRouter)
 app.use(notFoundHandler)
 app.use(errorHandler)
 
