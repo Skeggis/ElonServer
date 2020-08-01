@@ -134,9 +134,22 @@ const checkIfProgramExists = async programId => {
   return programResult.rowCount !== 0
 }
 
+const getShotTypesHandler = async() => {
+  const shotTypesResult = await getShotTypes()
+  if(shotTypesResult.rowCount > 0){
+    return formatShotTypes(shotTypesResult.rows)
+  } else {
+    return {
+      success: false,
+      message: 'No shot types found'
+    }
+  }
+}
+
 module.exports = {
   insertProgramHandler,
   getProgramsHandler,
   getProgramHandler,
-  checkIfProgramExists
+  checkIfProgramExists,
+  getShotTypesHandler
 }

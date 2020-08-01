@@ -32,7 +32,10 @@ const formatRoutine = routine => {
 
 const formatShot = shot => {
   return {
-    typeName: shot.type_name,
+    shotType: {
+      id: shot.shot_type_id,
+      name: shot.type_name
+    },
     locationName: shot.location_name,
     locationId: shot.shot_location_id,
     horizontal: shot.horizontal,
