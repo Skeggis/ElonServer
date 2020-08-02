@@ -27,7 +27,16 @@ const formatRoutine = routine => {
   }
 }
 
-
+const formatShotTypes = (shots) => {
+  let result = []
+  shots.forEach(shot => {
+    result.push({
+      id: shot.id,
+      name: shot.name
+    })
+  })
+  return result
+}
 
 
 const formatShot = shot => {
@@ -49,5 +58,6 @@ module.exports = {
   formatProgram,
   formatPrograms,
   formatRoutine,
-  formatShot
+  formatShot,
+  formatShotTypes
 }

@@ -139,6 +139,12 @@ const getShotLocation = async locationId => {
   return result
 }
 
+const getShotTypes = async () => {
+  const queryString = `SELECT * FROM ${DB_SHOT_TYPES}`
+  const result = await query(queryString)
+  return result
+}
+
 module.exports = {
   insertProgram,
   insertRoutines,
@@ -148,5 +154,6 @@ module.exports = {
   getRoutinesByProgramId,
   getRoutineDescriptionByRoutineId,
   getShotById,
-  getShotLocation
+  getShotLocation,
+  getShotTypes
 }
