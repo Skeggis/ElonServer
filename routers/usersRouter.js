@@ -22,7 +22,13 @@ async function login(req, res) {
         return res.status(401).json(result)
     }
 
-    return res.status(200).json(result)
+    if(await comparePasswords(password, result.user.password)){
+        return res.status(200).json(result)
+    }
+
+    return res.status(401).json({success: false, errors: ["Email or password are incorrect"]})
+
+    
 }
 
 async function signUp(req, res) {
@@ -74,6 +80,17 @@ async function signUp(req, res) {
 async function logout(req, res) {
     //TODO: Do something.
     res.status(200).json({ success: true })
+}
+
+async function comparePasswords(password, hashedPassword) {
+    const isPassword = await new Promise((resolve, reject) => {
+        if (!hashedPassword || !password) { resolve(false) }
+        bcrypt.compare(password, hashedPassword, function (err, isMatch) {
+            if (err) reject(err)
+            resolve(isMatch)
+        })
+    })
+    return isPassword
 }
 
 async function hashPassword(user) {

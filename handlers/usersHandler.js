@@ -19,7 +19,7 @@ const getUserByEmailHandler = async (email) => {
     if (!result.rows[0]) {
         return {
             success: false,
-            errors: ["Either email or password are incorrect"]
+            errors: ["Email or password are incorrect"]
         }
     }
 
