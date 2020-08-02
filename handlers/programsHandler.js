@@ -7,9 +7,7 @@ const {
   getPrograms,
   getProgramById,
   getRoutinesByProgramId,
-  getRoutineDescriptionByRoutineId,
-  getShotById,
-  getShotLocation
+  getShotTypes,
 } = require('../database/js/repositories/programsRepo')
 
 const {
@@ -17,8 +15,10 @@ const {
   formatRoutine,
   formatProgram,
   formatShot,
+  formatShotTypes,
   formatRoutineDesc
 } = require('../formatter')
+
 const { query } = require('express')
 const { transaction } = require('../database/js/query')
 const { groupByArray } = require('../helpers')
@@ -134,10 +134,13 @@ const checkIfProgramExists = async programId => {
   return programResult.rowCount !== 0
 }
 
-const getShotTypesHandler = async() => {
+const getShotTypesHandler = async () => {
   const shotTypesResult = await getShotTypes()
-  if(shotTypesResult.rowCount > 0){
-    return formatShotTypes(shotTypesResult.rows)
+  if (shotTypesResult.rowCount > 0) {
+    return {
+      success: true,
+      result: formatShotTypes(shotTypesResult.rows)
+    }
   } else {
     return {
       success: false,

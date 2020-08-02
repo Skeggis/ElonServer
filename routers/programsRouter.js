@@ -78,7 +78,7 @@ const getShotTypesRoute = async (req, res) => {
 
 router.get('/', getProgramsRoute)
 router.post('/', insertProgramRoute)
+router.get('/shotTypes', getShotTypesRoute)
 router.get('/:id', getProgramRoute)
-router.get('/shotTypes', getShotTypesHandler)
 
 module.exports = router
