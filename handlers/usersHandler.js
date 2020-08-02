@@ -19,7 +19,7 @@ const getUserByEmailHandler = async (email) => {
     if (!result.rows[0]) {
         return {
             success: false,
-            message: "Either email or password are incorrect"
+            errors: ["Either email or password are incorrect"]
         }
     }
 
@@ -34,7 +34,7 @@ const createUserHandler = async (user = { email, uuid, password }) => {
     if (result.rowCount == 0) {
         return {
             success: false,
-            message: "Error trying to create the user"
+            errors: ["Error trying to create the user"]
         }
     }
 

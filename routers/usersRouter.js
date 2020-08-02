@@ -60,7 +60,7 @@ async function signUp(req, res) {
     }
 
     const hashedPassword = await hashPassword(user)
-    if (!hashedPassword) { return res.status(500).json({ success: false, message: "Something went HORRIBLY wrong" }) }
+    if (!hashedPassword) { return res.status(500).json({ success: false, errors: ["Something went HORRIBLY wrong"] }) }
 
     user.password = hashedPassword
 
