@@ -134,11 +134,13 @@ const checkIfProgramExists = async programId => {
   return programResult.rowCount !== 0
 }
 
-const getShotTypesHandler = async() => {
+const getShotTypesHandler = async () => {
   const shotTypesResult = await getShotTypes()
-  if(shotTypesResult.rowCount > 0){
-    console.log(shotTypesResult.rows)
-    return formatShotTypes(shotTypesResult.rows)
+  if (shotTypesResult.rowCount > 0) {
+    return {
+      success: true,
+      result: formatShotTypes(shotTypesResult.rows)
+    }
   } else {
     return {
       success: false,
