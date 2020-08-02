@@ -34,7 +34,7 @@ async function signUp(req, res) {
 
     if (password != confirmPassword) { errors.push("Passwords do not match") }
 
-    if (password < 8) { errors.push("Password must be at least 8 characters") }
+    if (password.length < 8) { errors.push("Password must be at least 8 characters") }
 
     if (errors.length > 0) {
         return res.status(400).json({
