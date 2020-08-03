@@ -17,7 +17,14 @@ async function googleLogin(req, res) {
         })
     }
 
-    const result = await signInWithGoogleHandler()
+    const user = {
+        email,
+        googleId,
+        name,
+        photoUrl
+    }
+
+    const result = await signInWithGoogleHandler(user)
 
     if (!result.success) {
         return res.status(401).json(result)
