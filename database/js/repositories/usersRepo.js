@@ -34,17 +34,19 @@ const insertUser = async (user = {email, uuid, password, googleId, name, photoUr
     return result
 }
 
+
+//TODO: Only update photo and name if this is first time logging in with Google!
 const updateUserByEmailAndGoogleId = async ( user = {email, googleId, photoUrl, name},client=null) => {
   console.log("THings: ", user.email, user.googleId)
   console.log(`update ${DB_USERS} set photo_url=${user.photoUrl}, name=${user.name} where email=${user.email} and google_id=${user.googleId}`);
 
-  const usersQuery = `update ${DB_USERS} set photo_url=$1, name=$2 where email=$3 and google_id=$4 returning *`;
+  const usersQuery = `update ${DB_USERS} set photo_url=$1, name=$2,google_id=$3 where email=$4 returning *`;
   let result;
 
   if(client){
-    result = await client.query(usersQuery, [user.photoUrl, user.name, user.email.toLowerCase(), user.googleId])
+    result = await client.query(usersQuery, [user.photoUrl, user.name, user.googleId, user.email.toLowerCase()])
   } else {
-    result = await query(usersQuery, [user.photoUrl, user.name, user.email.toLowerCase(), user.googleId])
+    result = await query(usersQuery, [user.photoUrl, user.name, user.googleId, user.email.toLowerCase()])
   }
   return result
 }
