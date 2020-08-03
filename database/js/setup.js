@@ -11,7 +11,9 @@ const {
   DB_ROUTINES,
   DB_ROUTINE_DESCRIPTIONS,
   DB_SHOT_LOCATIONS,
-  DB_SHOTS
+  DB_SHOTS,
+  DB_USERS,
+  DB_ORGANIZATIONS
 } = process.env
 
 async function main() {
@@ -24,7 +26,9 @@ async function main() {
   ${DB_SHOT_TYPES},
   ${DB_PROGRAMS},
   ${DB_ROUTINES},
-  ${DB_ROUTINE_DESCRIPTIONS}
+  ${DB_ROUTINE_DESCRIPTIONS},
+  ${DB_USERS},
+  ${DB_ORGANIZATIONS},
   CASCADE
   `)
 
