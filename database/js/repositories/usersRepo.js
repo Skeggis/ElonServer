@@ -22,8 +22,8 @@ const getUserByEmail = async (email, client=null) => {
 
 const insertUser = async (user = {email, uuid, password, googleId, name, photoUrl}, client=null) => {
     console.log("USER: ", user)
-    console.log(`INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photo_url) = ('${user.email.toLowerCase()}', ${user.uuid}, ${user.password}) returning *`)
-    const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photo_url)  VALUES ($1,$2,$3,$4,$5,$6) returning *`
+    console.log(`INSERT INTO ${DB_USERS} (email, uuid, password, google_id, name, photo_url) = ('${user.email.toLowerCase()}', ${user.uuid}, ${user.password}, ${user.googleId}, ${user.name}, ${user.photoUrl}) returning *`)
+    const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password, google_id, name, photo_url)  VALUES ($1,$2,$3,$4,$5,$6) returning *`
 
     let result;
     if(result){
