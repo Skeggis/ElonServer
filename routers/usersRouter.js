@@ -3,7 +3,30 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
-const { isEmailRegistered, createUserHandler, getUserByEmailHandler } = require('../handlers/usersHandler.js')
+const { isEmailRegistered, createUserHandler, getUserByEmailHandler, signInWithGoogleHandler } = require('../handlers/usersHandler.js')
+
+
+async function googleLogin(req, res) {
+    const { email = '', googleId = '', name = '', photoUrl = '' } = req.body
+
+    if (!(email && googleId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Client error",
+            errors: ["Please fill all fields"]
+        })
+    }
+
+    const result = await signInWithGoogleHandler()
+
+    if (!result.success) {
+        return res.status(401).json(result)
+    }
+
+    return res.status(200).json(result)
+
+    
+}
 
 async function login(req, res) {
     const { email = '', password = '' } = req.body
@@ -112,5 +135,6 @@ async function hashPassword(user) {
 router.post('/signUp', signUp);
 router.post('/login', login)
 router.post('/logout', logout)
+router.post('/googleLogin', googleLogin)
 
 module.exports = router;
