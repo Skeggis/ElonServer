@@ -22,8 +22,8 @@ const getUserByEmail = async (email, client=null) => {
 
 const insertUser = async (user = {email, uuid, password, googleId, name, photoUrl}, client=null) => {
     console.log("USER: ", user)
-    console.log(`INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photoUrl) = ('${user.email.toLowerCase()}', ${user.uuid}, ${user.password}) returning *`)
-    const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photoUrl)  VALUES ($1,$2,$3,$4,$5,$6) returning *`
+    console.log(`INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photo_url) = ('${user.email.toLowerCase()}', ${user.uuid}, ${user.password}) returning *`)
+    const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password, googleId, name, photo_url)  VALUES ($1,$2,$3,$4,$5,$6) returning *`
 
     let result;
     if(result){
@@ -36,9 +36,9 @@ const insertUser = async (user = {email, uuid, password, googleId, name, photoUr
 
 const updateUserByEmailAndGoogleId = async ( user = {email, googleId, photoUrl, name},client=null) => {
   console.log("THings: ", user.email, user.googleId)
-  console.log(`update ${DB_USERS} set photoUrl=${user.photoUrl}, name=${user.name} where email=${user.email} and google_id=${user.googleId}`);
+  console.log(`update ${DB_USERS} set photo_url=${user.photoUrl}, name=${user.name} where email=${user.email} and google_id=${user.googleId}`);
 
-  const usersQuery = `update ${DB_USERS} set photoUrl=$1, name=$2 where email=$3 and google_id=$4 returning *`;
+  const usersQuery = `update ${DB_USERS} set photo_url=$1, name=$2 where email=$3 and google_id=$4 returning *`;
   let result;
 
   if(client){
