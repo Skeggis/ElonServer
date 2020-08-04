@@ -7,7 +7,7 @@ const {
   getPrograms,
   getProgramById,
   getRoutinesByProgramId,
-  getShotTypes,
+  getShots,
 } = require('../database/js/repositories/programsRepo')
 
 const {
@@ -15,8 +15,7 @@ const {
   formatRoutine,
   formatProgram,
   formatShot,
-  formatShotTypes,
-  formatRoutineDesc
+  formatShotLocation
 } = require('../formatter')
 
 const { query } = require('express')
@@ -134,19 +133,35 @@ const checkIfProgramExists = async programId => {
   return programResult.rowCount !== 0
 }
 
-const getShotTypesHandler = async () => {
-  const shotTypesResult = await getShotTypes()
-  if (shotTypesResult.rowCount > 0) {
-    return {
-      success: true,
-      result: formatShotTypes(shotTypesResult.rows)
-    }
-  } else {
+const getShotsByLocationHandler = async () => {
+  const shotsResult = await getShots()
+
+  if (shotsResult.rowCount <= 0) {
     return {
       success: false,
-      message: 'No shot types found'
+      message: 'No shots found'
     }
   }
+
+  shotsByLocation = groupByArray(shotsResult.rows, 'shot_location_id')
+
+  let locations = []
+  shotsByLocation.forEach(element => {
+    let location = formatShotLocation(element.values[0])
+    let shots = []
+    element.values.forEach(shot => {
+      shots.push(formatShot(shot))
+    })
+    location.shots = shots
+
+    locations.push(location)
+  });
+
+  return {
+    success: true,
+    result: locations
+  }
+
 }
 
 module.exports = {
@@ -154,5 +169,5 @@ module.exports = {
   getProgramsHandler,
   getProgramHandler,
   checkIfProgramExists,
-  getShotTypesHandler
+  getShotsByLocationHandler
 }

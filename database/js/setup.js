@@ -11,7 +11,7 @@ const {
   DB_ROUTINES,
   DB_ROUTINE_DESCRIPTIONS,
   DB_SHOT_LOCATIONS,
-  DB_SHOTS
+  DB_SHOTS,
 } = process.env
 
 async function main() {

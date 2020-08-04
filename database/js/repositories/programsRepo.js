@@ -139,8 +139,14 @@ const getShotLocation = async locationId => {
   return result
 }
 
-const getShotTypes = async () => {
-  const queryString = `SELECT * FROM ${DB_SHOT_TYPES}`
+const getShots = async () => {
+  const queryString = `
+  SELECT locations.name AS location_name, types.name AS type_name, * FROM ${DB_SHOTS} AS shots 
+  INNER JOIN ${DB_SHOT_LOCATIONS} AS locations
+  ON shots.shot_location_id = locations.id
+  INNER JOIN ${DB_SHOT_TYPES} types 
+  ON shots.shot_type_id = types.id
+  `
   const result = await query(queryString)
   return result
 }
@@ -155,5 +161,5 @@ module.exports = {
   getRoutineDescriptionByRoutineId,
   getShotById,
   getShotLocation,
-  getShotTypes
+  getShots
 }

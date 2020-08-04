@@ -66,11 +66,20 @@ const formatUser = user => {
   }
 }
 
+const formatShotLocation = location => {
+  return {
+    id: location.shot_location_id,
+    name: location.location_name,
+  }
+}
+
+
 module.exports = {
   formatProgram,
   formatPrograms,
   formatRoutine,
   formatShot,
   formatShotTypes,
-  formatUser
+  formatUser,
+  formatShotLocation
 }

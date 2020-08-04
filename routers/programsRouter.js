@@ -6,7 +6,7 @@ const {
   getProgramsHandler,
   getProgramHandler,
   checkIfProgramExists,
-  getShotTypesHandler
+  getShotsByLocationHandler
 } = require('../handlers/programsHandler')
 
 
@@ -66,8 +66,8 @@ const getProgramRoute = async (req, res) => {
   }
 }
 
-const getShotTypesRoute = async (req, res) => {
-  const result = await getShotTypesHandler()
+const getShotsRoute = async (req, res) => {
+  const result = await getShotsByLocationHandler()
 
   if(result.success){
     res.status(200).json(result)
@@ -78,7 +78,7 @@ const getShotTypesRoute = async (req, res) => {
 
 router.get('/', getProgramsRoute)
 router.post('/', insertProgramRoute)
-router.get('/shotTypes', getShotTypesRoute)
+router.get('/shots', getShotsRoute)
 router.get('/:id', getProgramRoute)
 
 module.exports = router
