@@ -3,7 +3,37 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
-const { isEmailRegistered, createUserHandler, getUserByEmailHandler } = require('../handlers/usersHandler.js')
+const { isEmailRegistered, createUserHandler, getUserByEmailHandler, signInWithGoogleHandler } = require('../handlers/usersHandler.js')
+
+
+async function googleLogin(req, res) {
+    const { email = '', googleId = '', name = '', photoUrl = '' } = req.body
+
+    if (!(email && googleId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Client error",
+            errors: ["Please fill all fields"]
+        })
+    }
+
+    const user = {
+        email,
+        googleId,
+        name,
+        photoUrl
+    }
+
+    const result = await signInWithGoogleHandler(user)
+
+    if (!result.success) {
+        return res.status(401).json(result)
+    }
+
+    return res.status(200).json(result)
+
+    
+}
 
 async function login(req, res) {
     const { email = '', password = '' } = req.body
@@ -22,7 +52,13 @@ async function login(req, res) {
         return res.status(401).json(result)
     }
 
-    return res.status(200).json(result)
+    if(await comparePasswords(password, result.user.password)){
+        return res.status(200).json(result)
+    }
+
+    return res.status(401).json({success: false, errors: ["Email or password are incorrect"]})
+
+    
 }
 
 async function signUp(req, res) {
@@ -34,7 +70,7 @@ async function signUp(req, res) {
 
     if (password != confirmPassword) { errors.push("Passwords do not match") }
 
-    if (password < 8) { errors.push("Password must be at least 8 characters") }
+    if (password.length < 8) { errors.push("Password must be at least 8 characters") }
 
     if (errors.length > 0) {
         return res.status(400).json({
@@ -60,7 +96,7 @@ async function signUp(req, res) {
     }
 
     const hashedPassword = await hashPassword(user)
-    if (!hashedPassword) { return res.status(500).json({ success: false, message: "Something went HORRIBLY wrong" }) }
+    if (!hashedPassword) { return res.status(500).json({ success: false, errors: ["Something went HORRIBLY wrong"] }) }
 
     user.password = hashedPassword
 
@@ -74,6 +110,17 @@ async function signUp(req, res) {
 async function logout(req, res) {
     //TODO: Do something.
     res.status(200).json({ success: true })
+}
+
+async function comparePasswords(password, hashedPassword) {
+    const isPassword = await new Promise((resolve, reject) => {
+        if (!hashedPassword || !password) { resolve(false) }
+        bcrypt.compare(password, hashedPassword, function (err, isMatch) {
+            if (err) reject(err)
+            resolve(isMatch)
+        })
+    })
+    return isPassword
 }
 
 async function hashPassword(user) {
@@ -95,5 +142,6 @@ async function hashPassword(user) {
 router.post('/signUp', signUp);
 router.post('/login', login)
 router.post('/logout', logout)
+router.post('/googleLogin', googleLogin)
 
 module.exports = router;

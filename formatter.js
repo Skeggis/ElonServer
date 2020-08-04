@@ -62,6 +62,8 @@ const formatUser = user => {
     email: user.email,
     password: user.password, //hashed
     organization_id: user.organization_id,
+    photoUrl: user.photo_url,
+    googleId: user.google_id,
     created: user.created
   }
 }
