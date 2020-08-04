@@ -41,6 +41,7 @@ const formatShotTypes = (shots) => {
 
 const formatShot = shot => {
   return {
+    id: shot.shot_id,
     shotType: {
       id: shot.shot_type_id,
       name: shot.type_name

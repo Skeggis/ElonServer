@@ -141,7 +141,7 @@ const getShotLocation = async locationId => {
 
 const getShots = async () => {
   const queryString = `
-  SELECT locations.name AS location_name, types.name AS type_name, * FROM ${DB_SHOTS} AS shots 
+  SELECT location.id AS location_id, shot.id AS shot_id, locations.name AS location_name, types.name AS type_name, * FROM ${DB_SHOTS} AS shots 
   INNER JOIN ${DB_SHOT_LOCATIONS} AS locations
   ON shots.shot_location_id = locations.id
   INNER JOIN ${DB_SHOT_TYPES} types 
