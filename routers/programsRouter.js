@@ -31,11 +31,11 @@ const {
  * }
  */
 const insertProgramRoute = async (req, res) => {
-  const program = req.body.program
+  const program = req.body
 
   const result = await insertProgramHandler(program)
   if(result.success){
-    res.status(200).json(result)
+    res.status(201).json(result)
   } else {
     res.status(500).json(result)
   }
