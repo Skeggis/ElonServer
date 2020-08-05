@@ -69,6 +69,8 @@ const calculateProgramTime = (program) => {
     totalTime += (routine.timeout + routine.rounds * routineTime)
   });
 
+  totalTime += program.timeout
+
   return totalTime * program.sets
 }
 
