@@ -57,6 +57,7 @@ const calculateProgramShots = (program) => {
 }
 
 const calculateProgramTime = (program) => {
+  console.log(program)
   let totalTime = 0
   program.routines.forEach(routine => {
     let routineTime = 0
