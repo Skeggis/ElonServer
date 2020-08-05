@@ -12,7 +12,7 @@ const {
 
 const insertProgram = async (client = null, program) => {
   const insertQuery = `INSERT INTO ${DB_PROGRAMS}
-    (name, description, author, total_time, num_shots, sets, timeout)
+    (name, description, author, total_time, num_shots, sets, set_timeout)
     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`
   const insertValues = [
     program.name,
@@ -34,7 +34,7 @@ const insertProgram = async (client = null, program) => {
 }
 
 const insertRoutines = async (client = null, routines, programId) => {
-  let insertQuery = `INSERT INTO ${DB_ROUTINES} (rounds, timeout, ordering, program_id) VALUES `
+  let insertQuery = `INSERT INTO ${DB_ROUTINES} (rounds, round_timeout, ordering, program_id) VALUES `
   const insertValues = []
   for (let i = 0; i < routines.length; i++) {
     const currRoutine = routines[i]
@@ -57,7 +57,7 @@ const insertRoutines = async (client = null, routines, programId) => {
 }
 
 const insertRoutinesDesc = async (client = null, routines, routinesRows) => {
-  let insertQuery = `INSERT INTO ${DB_ROUTINE_DESCRIPTIONS} (shot_type, timeout, routine_id, ordering) VALUES `
+  let insertQuery = `INSERT INTO ${DB_ROUTINE_DESCRIPTIONS} (shot_id, shot_timeout, routine_id, ordering) VALUES `
   let insertValues = []
   let counter = 0
   for (let i = 0; i < routines.length; i++) {
@@ -70,7 +70,7 @@ const insertRoutinesDesc = async (client = null, routines, routinesRows) => {
       } else {
         insertQuery = insertQuery.concat(`($${counter + 1}, $${counter + 2}, $${counter + 3}, $${counter + 4}), `)
       }
-      insertValues.push(currDesc.shotType, currDesc.timeout, routineId, j + 1)
+      insertValues.push(currDesc.id, currDesc.timeout, routineId, j + 1)
       counter += 4
     }
   }
