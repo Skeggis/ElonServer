@@ -253,10 +253,10 @@ async function deleteMemberFromOrganizationHandler(user_uuid,organization_id,uui
     }
 
     const membersResult = await getMembersOfOrganization(organization_id)
-    const joinRequesResult = await getJoinRequestsForOrganization(organization_id)
+    const joinRequestsResult = await getJoinRequestsForOrganization(organization_id)
 
     organization.members = formatMembers(membersResult.rows)
-    organization.join_requests = formatJoinRequest(joinRequesResult)
+    organization.join_requests = formatJoinRequests(joinRequestsResult)
 
     return {
         success: true,
@@ -264,8 +264,36 @@ async function deleteMemberFromOrganizationHandler(user_uuid,organization_id,uui
     }
 }
 
+async function getOrganizationDataHandler(uuid, organization_id){
+    const organizationResult = await getOrganizationFromId(organization_id)
+    if (!organizationResult.rows[0]) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["This organization doth not exist"]
+        }
+    }
+    let organization = formatOrganization(organizationResult.rows[0])
+
+    //This user is not the owner of this organization
+    if (organization.owner_id == uuid) {
+        const joinRequestResult = await getJoinRequestsForOrganization(organization_id)
+        organization.join_requests = formatJoinRequests(joinRequestResult.rows)
+    }
+
+    const membersResult = await getMembersOfOrganization(organization_id)
+    organization.members = formatMembers(membersResult.rows)
+
+    return {
+        success: true,
+        organization
+    }
+
+}
+
 module.exports = { createOrganizationHandler,
      getMyOrganizationHandler,
      requestToJoinOrganizationHandler,
      answerJoinRequestHandler,
-     deleteMemberFromOrganizationHandler }
+     deleteMemberFromOrganizationHandler,
+     getOrganizationDataHandler }

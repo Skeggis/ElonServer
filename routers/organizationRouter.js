@@ -6,7 +6,8 @@ const {
     getMyOrganizationHandler, 
     requestToJoinOrganizationHandler,
     answerJoinRequestHandler,
-    deleteMemberHandler
+    deleteMemberFromOrganizationHandler,
+    getOrganizationDataHandler
 } = require('../handlers/organizationHandler')
 
 async function createOrganization(req, res) {
@@ -112,10 +113,19 @@ async function deleteMemberFromOrganization(req,res){
 
 }
 
+async function refreshOrganizationData(req,res){
+    const {uuid='', organization_id=''} = req.body
+    const result = await getOrganizationDataHandler(uuid, organization_id)
+    if (!result.success) { return res.status(401).json(result) }
+
+    return res.status(200).json(result)
+}
+
 router.post('/createOrganization', createOrganization)
 router.post('/getMyOrganization', getMyOrganization)
 router.post('/requestToJoinOrganization', requestToJoinOrganization)
 router.post('/answerJoinRequest', answerJoinRequest)
 router.post('/deleteMemberFromOrganization', deleteMemberFromOrganization)
+router.post('/refreshOrganization', refreshOrganizationData)
 
 module.exports = router
