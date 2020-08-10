@@ -1,6 +1,6 @@
 create table users (
-  id serial primary key,
-  uuid uuid not null,
+  id serial,
+  uuid uuid primary key not null ,
   organization_id integer references organizations(id),
   name varchar(255),
   email varchar(255) not null,
