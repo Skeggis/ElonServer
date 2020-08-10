@@ -13,7 +13,8 @@ const {
   DB_SHOT_LOCATIONS,
   DB_SHOTS,
   DB_USERS,
-  DB_ORGANIZATIONS
+  DB_ORGANIZATIONS,
+  DB_JOIN_REQUESTS
 } = process.env
 
 async function main() {
@@ -21,6 +22,7 @@ async function main() {
   console.info('Initializing database')
 
   await query(`DROP TABLE IF EXISTS
+  ${DB_JOIN_REQUESTS},
   ${DB_SHOTS},
   ${DB_SHOT_LOCATIONS},
   ${DB_SHOT_TYPES},
@@ -43,6 +45,7 @@ async function main() {
     const routineDescription = await readFileAsync('./database/schemas/routineDescription.sql')
     const organizations = await readFileAsync('./database/schemas/organizations.sql')
     const users = await readFileAsync('./database/schemas/users.sql')
+    const joinRequests = await readFileAsync('./database/schemas/joinRequests.sql')
 
     await query(organizations.toString('utf8'))
     await query(users.toString('utf8'))
@@ -52,6 +55,7 @@ async function main() {
     await query(programs.toString('utf8'))
     await query(routines.toString('utf8'))
     await query(routineDescription.toString('utf8'))
+    await query(joinRequests.toString('utf8'))
 
     console.info('Tables created')
   } catch (e) {
