@@ -25,7 +25,7 @@ const {
 } = require('../formatter')
 const { transaction } = require('../database/js/query')
 
-async function createOrganizationHandler(organization = { owner_id:'', name:'', image_url:'' }) {
+async function createOrganizationHandler(organization = { owner_id: '', name: '', image_url: '' }) {
 
     const userResult = await getUserByUUID(organization.owner_id);
 
@@ -223,7 +223,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
 }
 
 //Todo: change this into using the transaction function
-async function deleteMemberFromOrganizationHandler(user_uuid,organization_id,uuid){
+async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, uuid) {
     const organizationResult = await getOrganizationFromId(organization_id)
     if (!organizationResult.rows[0]) {
         return {
@@ -263,8 +263,8 @@ async function deleteMemberFromOrganizationHandler(user_uuid,organization_id,uui
         organization
     }
 }
-
-async function getOrganizationDataHandler(uuid, organization_id){
+//Todo: change this into using the transaction function?
+async function getOrganizationDataHandler(uuid, organization_id) {
     const organizationResult = await getOrganizationFromId(organization_id)
     if (!organizationResult.rows[0]) {
         return {
@@ -275,7 +275,9 @@ async function getOrganizationDataHandler(uuid, organization_id){
     }
     let organization = formatOrganization(organizationResult.rows[0])
 
-    //This user is not the owner of this organization
+    //Todo: Check if this user is a member of the organization and deny access if he is not.
+
+    //This user is the owner of this organization
     if (organization.owner_id == uuid) {
         const joinRequestResult = await getJoinRequestsForOrganization(organization_id)
         organization.join_requests = formatJoinRequests(joinRequestResult.rows)
@@ -291,9 +293,11 @@ async function getOrganizationDataHandler(uuid, organization_id){
 
 }
 
-module.exports = { createOrganizationHandler,
-     getMyOrganizationHandler,
-     requestToJoinOrganizationHandler,
-     answerJoinRequestHandler,
-     deleteMemberFromOrganizationHandler,
-     getOrganizationDataHandler }
+module.exports = {
+    createOrganizationHandler,
+    getMyOrganizationHandler,
+    requestToJoinOrganizationHandler,
+    answerJoinRequestHandler,
+    deleteMemberFromOrganizationHandler,
+    getOrganizationDataHandler
+}

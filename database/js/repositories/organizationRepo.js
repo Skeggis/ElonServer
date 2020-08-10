@@ -1,30 +1,30 @@
 const { query } = require('../query')
 
 const {
-  DB_ORGANIZATIONS,
-  DB_USERS,
-  DB_JOIN_REQUESTS
+    DB_ORGANIZATIONS,
+    DB_USERS,
+    DB_JOIN_REQUESTS
 } = process.env
 
-const createOrganization = async (organization = {owner_id: '', name: '', image_url: ''}, client=null) => {
+const createOrganization = async (organization = { owner_id: '', name: '', image_url: '' }, client = null) => {
     console.log("Inserting new organization")
     console.log(`Insert into ${DB_ORGANIZATIONS} set (owner_id, name, image_url) values('${organization.owner_id}', '${organization.name}', '${organization.image_url}') returning *`)
     const organizationQuery = `Insert into ${DB_ORGANIZATIONS} set (owner_id, name, image_url) values($1,$2,$3) returning *`
-  let result;
-  if(client){
-    result = await client.query(organizationQuery, [organization.owner_id,organization.name,organization.image_url])
-  } else {
-    result = await query(organizationQuery, [organization.owner_id,organization.name,organization.image_url])
-  }
-  return result
+    let result;
+    if (client) {
+        result = await client.query(organizationQuery, [organization.owner_id, organization.name, organization.image_url])
+    } else {
+        result = await query(organizationQuery, [organization.owner_id, organization.name, organization.image_url])
+    }
+    return result
 }
 
-const updateUsersOrganizationMembership = async (user_id, organization_id, client=null) => {
+const updateUsersOrganizationMembership = async (user_id, organization_id, client = null) => {
     console.log("Updating users organization membership")
     console.log(`update ${DB_USERS} set organization_id = '${organization_id}' where uuid = ${user_id} returning *`)
     const organizationQuery = `update ${DB_USERS} set organization_id = $1 where uuid = $2 returning *`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [organization_id, user_id])
     } else {
         result = await query(organizationQuery, [organization_id, user_id])
@@ -37,7 +37,7 @@ const getAllOrganizations = async (client = null) => {
     console.log(`Select * from ${DB_ORGANIZATIONS}`)
     const organizationQuery = `Select * from ${DB_ORGANIZATIONS}`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery)
     } else {
         result = await query(organizationQuery)
@@ -45,12 +45,12 @@ const getAllOrganizations = async (client = null) => {
     return result
 }
 
-const getOrganizationFromId = async (organization_id,client=null) => {
-    console.log("Get organization from id: "+ organization_id)
+const getOrganizationFromId = async (organization_id, client = null) => {
+    console.log("Get organization from id: " + organization_id)
     console.log(`Select * from ${DB_ORGANIZATIONS} where id=${organization_id}`)
     const organizationQuery = `Select * from ${DB_ORGANIZATIONS} where id=$1`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [organization_id])
     } else {
         result = await query(organizationQuery, [organization_id])
@@ -64,13 +64,13 @@ const getMembersOfOrganization = async (organization_id, client = null) => {
     console.log(`Select * from ${DB_USERS} where organization_id=${organization_id}`)
     const organizationQuery = `Select * from ${DB_USERS} where organization_id=$1`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [organization_id])
     } else {
         result = await query(organizationQuery, [organization_id])
     }
     return result
-} 
+}
 
 //Todo: change to join, so joinRequests table joins users table on user_id.
 const getJoinRequestsForOrganization = async (organization_id, client = null) => {
@@ -78,7 +78,7 @@ const getJoinRequestsForOrganization = async (organization_id, client = null) =>
     console.log(`Select * from ${DB_JOIN_REQUESTS} where organization_id=${organization_id}`)
     const organizationQuery = `Select * from ${DB_JOIN_REQUESTS} where organization_id=$1`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [organization_id])
     } else {
         result = await query(organizationQuery, [organization_id])
@@ -91,7 +91,7 @@ const getRequestToJoinOrganizationFromUUID = async (uuid, client = null) => {
     console.log(`Select * from ${DB_JOIN_REQUESTS} where user_id = '${uuid}'`)
     const organizationQuery = `Select * from ${DB_JOIN_REQUESTS} where user_id = $1`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [uuid])
     } else {
         result = await query(organizationQuery, [uuid])
@@ -104,10 +104,10 @@ const insertRequestToJoinOrganization = async (uuid, organization_id, client = n
     console.log(`Insert into ${DB_JOIN_REQUESTS} set (user_uuid, organization_id) values('${uuid}', ${organization_id}) returning *`)
     const organizationQuery = `Insert into ${DB_JOIN_REQUESTS} set (user_uuid, organization_id) values($1,$2) returning *`
     let result;
-    if(client){
-        result = await client.query(organizationQuery, [uuid,organization_id])
+    if (client) {
+        result = await client.query(organizationQuery, [uuid, organization_id])
     } else {
-        result = await query(organizationQuery, [uuid,organization_id])
+        result = await query(organizationQuery, [uuid, organization_id])
     }
     return result
 }
@@ -117,7 +117,7 @@ const removeJoinRequest = async (user_uuid, organization_id) => {
     console.log(`Delete from ${DB_JOIN_REQUESTS} where user_uuid = '${user_uuid}' and organization_id = ${organization_id}`)
     const organizationQuery = `Delete from ${DB_JOIN_REQUESTS} where user_uuid = $1 and organization_id = $2`
     let result;
-    if(client){
+    if (client) {
         result = await client.query(organizationQuery, [user_uuid, organization_id])
     } else {
         result = await query(organizationQuery, [user_uuid, organization_id])
@@ -130,10 +130,10 @@ const deleteMemberFromOrganization = async (user_uuid, organization_id) => {
     console.log(`Update ${DB_JOIN_REQUESTS} set organization_id = ${organization_id} where uuid = '${user_uuid}' returning *`)
     const organizationQuery = `Update ${DB_JOIN_REQUESTS} set organization_id = $1 where uuid = $2 returning *`
     let result;
-    if(client){
-        result = await client.query(organizationQuery, [organization_id,user_uuid])
+    if (client) {
+        result = await client.query(organizationQuery, [organization_id, user_uuid])
     } else {
-        result = await query(organizationQuery, [organization_id,user_uuid])
+        result = await query(organizationQuery, [organization_id, user_uuid])
     }
     return result
 }

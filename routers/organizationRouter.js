@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 
-const { 
-    createOrganizationHandler, 
-    getMyOrganizationHandler, 
+const {
+    createOrganizationHandler,
+    getMyOrganizationHandler,
     requestToJoinOrganizationHandler,
     answerJoinRequestHandler,
     deleteMemberFromOrganizationHandler,
@@ -58,10 +58,10 @@ async function getMyOrganization(req, res) {
     return res.status(200).json(result)
 }
 
-async function requestToJoinOrganization(req, res){
-    const {uuid='',organization_id=''} = req.body
+async function requestToJoinOrganization(req, res) {
+    const { uuid = '', organization_id = '' } = req.body
 
-    if (!(uuid&&organization_id)) {
+    if (!(uuid && organization_id)) {
         return res.status(400).json({
             success: false,
             message: "Client error",
@@ -76,11 +76,11 @@ async function requestToJoinOrganization(req, res){
     return res.status(200).json(result)
 }
 
-async function answerJoinRequest(req, res){
+async function answerJoinRequest(req, res) {
     //UUID is uuid of the user sending the post request
-    const {user_uuid='', organization_id='', uuid='', accept=false} = req.body
+    const { user_uuid = '', organization_id = '', uuid = '', accept = false } = req.body
 
-    if (!(user_uuid&&organization_id&&uuid)) {
+    if (!(user_uuid && organization_id && uuid)) {
         return res.status(400).json({
             success: false,
             message: "Client error",
@@ -88,17 +88,17 @@ async function answerJoinRequest(req, res){
         })
     }
 
-    const result = await answerJoinRequestHandler(user_uuid,organization_id,uuid,accept)
+    const result = await answerJoinRequestHandler(user_uuid, organization_id, uuid, accept)
     if (!result.success) { return res.status(401).json(result) }
 
     return res.status(200).json(result)
 }
 
-async function deleteMemberFromOrganization(req,res){
+async function deleteMemberFromOrganization(req, res) {
     //UUID is uuid of the user sending the post request
-    const {user_uuid='', organization_id='', uuid=''} = req.body
+    const { user_uuid = '', organization_id = '', uuid = '' } = req.body
 
-    if (!(user_uuid&&organization_id&&uuid)) {
+    if (!(user_uuid && organization_id && uuid)) {
         return res.status(400).json({
             success: false,
             message: "Client error",
@@ -106,15 +106,15 @@ async function deleteMemberFromOrganization(req,res){
         })
     }
 
-    const result = await deleteMemberFromOrganizationHandler(user_uuid,organization_id,uuid)
+    const result = await deleteMemberFromOrganizationHandler(user_uuid, organization_id, uuid)
     if (!result.success) { return res.status(401).json(result) }
 
     return res.status(200).json(result)
 
 }
 
-async function refreshOrganizationData(req,res){
-    const {uuid='', organization_id=''} = req.body
+async function refreshOrganizationData(req, res) {
+    const { uuid = '', organization_id = '' } = req.body
     const result = await getOrganizationDataHandler(uuid, organization_id)
     if (!result.success) { return res.status(401).json(result) }
 
