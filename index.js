@@ -12,12 +12,14 @@ const {
 
 const programRouter = require('./routers/programsRouter')
 const usersRouter = require('./routers/usersRouter')
+const organizationRouter = require('./routers/organizationRouter')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/programs', programRouter)
 app.use('/users', usersRouter)
+app.use('/organization', organizationRouter)
 app.use(notFoundHandler)
 app.use(errorHandler)
 

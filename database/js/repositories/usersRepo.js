@@ -5,6 +5,20 @@ const {
   DB_ORGANIZATIONS
 } = process.env
 
+const getUserByUUID = async (uuid, client=null) => {
+  console.log("GETTING USER BY UUID")
+  console.log(`SELECT * FROM ${DB_USERS} where uuid = '${uuid}'`)
+  const usersQuery = `SELECT * FROM ${DB_USERS} where uuid = $1`
+
+  let result;
+  if(client){
+    result = await client.query(usersQuery, [uuid])
+  } else {
+    result = await query(usersQuery, [uuid])
+  }
+  return result
+}
+
 const getUserByEmail = async (email, client=null) => {
     console.log("GETTING USER BY EMAIL")
     console.log(`SELECT * FROM ${DB_USERS} where email = '${email.toLowerCase()}'`)
@@ -54,5 +68,6 @@ const updateUserByEmailAndGoogleId = async ( user = {email, googleId, photoUrl, 
 module.exports = {
   getUserByEmail,
   insertUser,
-  updateUserByEmailAndGoogleId
+  updateUserByEmailAndGoogleId,
+  getUserByUUID
 }

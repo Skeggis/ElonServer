@@ -55,6 +55,57 @@ const formatShot = shot => {
   }
 }
 
+const formatOrganizations = organizations => {
+  let formattedOrganizations = []
+  organizations.forEach(organization => {
+    formattedOrganizations.push(formatOrganization(organization))
+  })
+  return formattedOrganizations
+}
+
+const formatOrganization = organization => {
+  return {
+    id: organization.id,
+    name: organization.name,
+    owner_id: organization.owner_id,
+    image_url: organization.image_url,
+    members: organization.members ? organization.members:[],
+    join_requests: organization.join_requests ? organization.join_requests: []
+  }
+}
+
+const formatJoinRequests = joinRequests => {
+  let formattedJoinRequests = []
+  joinRequests.forEach(joinRequest => {
+    formattedJoinRequests.push(formatJoinRequest(joinRequest))
+  })
+  return formattedMembers
+}
+
+const formatJoinRequest = joinRequest => {
+  return {
+    ...formatMember(joinRequest),
+  }
+}
+
+const formatMembers = members => {
+  let formattedMembers = []
+  members.forEach(member => {
+    formattedMembers.push(formatMember(member))
+  })
+  return formattedMembers
+}
+
+const formatMember = member => {
+  return {
+    uuid: member.uuid,
+    id: member.id,
+    name: member.name,
+    photo_url:member.photo_url,
+    organization_id: member.organization_id,
+  }
+}
+
 const formatUser = user => {
   return {
     uuid: user.uuid,
@@ -63,8 +114,8 @@ const formatUser = user => {
     email: user.email,
     password: user.password, //hashed
     organization_id: user.organization_id,
-    photoUrl: user.photo_url,
-    googleId: user.google_id,
+    photo_url: user.photo_url,
+    google_id: user.google_id,
     created: user.created
   }
 }
@@ -84,5 +135,11 @@ module.exports = {
   formatShot,
   formatShotTypes,
   formatUser,
-  formatShotLocation
+  formatShotLocation,
+  formatOrganization,
+  formatOrganizations,
+  formatMember,
+  formatMembers,
+  formatJoinRequest,
+  formatJoinRequests,
 }
