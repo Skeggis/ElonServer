@@ -66,7 +66,7 @@ const getUserByEmailHandler = async (email) => {
     }
 }
 
-const createUserHandler = async (user = { email, uuid, password }) => {
+const createUserHandler = async (user = { email,name, uuid, password }) => {
     const result = await insertUser(user)
     if (result.rowCount == 0) {
         return {

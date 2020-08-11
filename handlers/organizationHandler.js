@@ -125,7 +125,7 @@ async function getMyOrganizationHandler(uuid = '') {
 }
 
 async function requestToJoinOrganizationHandler(uuid, organization_id) {
-    const userResult = await getUserByUUID(organization.owner_id);
+    const userResult = await getUserByUUID(uuid);
     if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
 
     const user = formatUser(userResult.rows[0])

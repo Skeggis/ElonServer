@@ -62,11 +62,11 @@ async function login(req, res) {
 }
 
 async function signUp(req, res) {
-    const { email = '', password = '', confirmPassword = '' } = req.body
+    const { email = '', name='',password = '', confirmPassword = '' } = req.body
 
     const errors = []
 
-    if (!(email && password && confirmPassword)) { errors.push("Please fill all fields") }
+    if (!(email && password && confirmPassword && name)) { errors.push("Please fill all fields") }
 
     if (password != confirmPassword) { errors.push("Passwords do not match") }
 
@@ -91,6 +91,7 @@ async function signUp(req, res) {
 
     const user = {
         email,
+        name,
         password,
         uuid: uuidv4(),
     }
