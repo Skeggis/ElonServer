@@ -77,7 +77,7 @@ async function createOrganizationHandler(organization = { owner_id: '', name: ''
 //Returns all organizations if user is not a part of any organization (so he/she can choose an organization to join)
 async function getMyOrganizationHandler(uuid = '') {
     const userResult = await getUserByUUID(uuid);
-    if (!userResult[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
+    if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
 
     const user = formatUser(userResult.rows[0])
     let result;
@@ -126,7 +126,7 @@ async function getMyOrganizationHandler(uuid = '') {
 
 async function requestToJoinOrganizationHandler(uuid, organization_id) {
     const userResult = await getUserByUUID(organization.owner_id);
-    if (!userResult[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
+    if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
 
     const user = formatUser(userResult.rows[0])
     //User is a member of an organization
