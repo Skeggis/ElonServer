@@ -79,7 +79,7 @@ const formatJoinRequests = joinRequests => {
   joinRequests.forEach(joinRequest => {
     formattedJoinRequests.push(formatJoinRequest(joinRequest))
   })
-  return formattedMembers
+  return formattedJoinRequests
 }
 
 const formatJoinRequest = joinRequest => {

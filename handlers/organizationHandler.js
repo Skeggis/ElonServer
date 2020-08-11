@@ -108,7 +108,7 @@ async function getMyOrganizationHandler(uuid = '') {
         console.log(organization.owner_id.toLowerCase() === uuid.toLowerCase())
         if (organization.owner_id.toLowerCase() === uuid.toLowerCase()) {
             joinRequestsResult = await getJoinRequestsForOrganization(organization.id, client)
-            console.log(joinRequestsResult)
+            console.log(joinRequestsResult.rows)
             if(!joinRequestsResult){throw Error("Could not find joinRequests")}
             organization.join_requests = formatJoinRequests(joinRequestsResult.rows)
         }
