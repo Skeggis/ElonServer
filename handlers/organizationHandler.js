@@ -107,7 +107,7 @@ async function getMyOrganizationHandler(uuid = '') {
         if (isSameUUID(organization.owner_id, uuid)) {
             joinRequestsResult = await getJoinRequestsForOrganization(organization.id, client)
             console.log(joinRequestsResult.rows)
-            if(!joinRequestsResult){throw Error("Could not find joinRequests")}
+            if (!joinRequestsResult) { throw Error("Could not find joinRequests") }
             organization.join_requests = formatJoinRequests(joinRequestsResult.rows)
         }
     })
@@ -177,7 +177,7 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
     }
 }
 
-function isSameUUID(uuid1, uuid2){
+function isSameUUID(uuid1, uuid2) {
     return uuid1.toUpperCase() === uuid2.toUpperCase()
 }
 
@@ -230,6 +230,35 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
 }
 
 //Todo: change this into using the transaction function
+async function leaveOrganizationHandler(organization_id, uuid) {
+    const organizationResult = await getOrganizationFromId(organization_id)
+    if (!organizationResult.rows[0]) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["This organization doth not exist"]
+        }
+    }
+
+    let result = await deleteMemberFromOrganization(uuid, organization_id)
+    if (!result.rows[0]) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["Something failed while executing this action."]
+        }
+    }
+
+    //User is not a member of an organization
+    result = await getAllOrganizations()
+    return {
+        success: true,
+        organizations: formatOrganizations(result.rows)
+    }
+
+}
+
+//Todo: change this into using the transaction function
 async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, uuid) {
     const organizationResult = await getOrganizationFromId(organization_id)
     if (!organizationResult.rows[0]) {
@@ -242,7 +271,7 @@ async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, u
     let organization = formatOrganization(organizationResult.rows[0])
 
     //This user is not the owner of this organization
-    if (!isSameUUID(organization.owner_id,uuid)) {
+    if (!isSameUUID(organization.owner_id, uuid)) {
         return {
             success: false,
             message: "Something failed",
@@ -285,7 +314,7 @@ async function getOrganizationDataHandler(uuid, organization_id) {
     //Todo: Check if this user is a member of the organization and deny access if he is not.
 
     //This user is the owner of this organization
-    if (isSameUUID(organization.owner_id,uuid)) {
+    if (isSameUUID(organization.owner_id, uuid)) {
         const joinRequestResult = await getJoinRequestsForOrganization(organization_id)
         organization.join_requests = formatJoinRequests(joinRequestResult.rows)
     }
@@ -306,5 +335,6 @@ module.exports = {
     requestToJoinOrganizationHandler,
     answerJoinRequestHandler,
     deleteMemberFromOrganizationHandler,
-    getOrganizationDataHandler
+    getOrganizationDataHandler,
+    leaveOrganizationHandler
 }
