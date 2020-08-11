@@ -205,13 +205,13 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
 
     let result = await removeJoinRequest(user_uuid, organization_id)
 
-    if (!result.rows[0]) {
-        return {
-            success: false,
-            message: "Something failed",
-            errors: ["Something failed while executing this action."]
-        }
-    }
+    // if (!result.rows[0]) {
+    //     return {
+    //         success: false,
+    //         message: "Something failed",
+    //         errors: ["Something failed while executing this action."]
+    //     }
+    // }
     if (accept) {
         result = await updateUsersOrganizationMembership(user_uuid, organization_id)
     }
