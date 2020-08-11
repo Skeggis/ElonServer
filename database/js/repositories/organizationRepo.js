@@ -8,8 +8,8 @@ const {
 
 const createOrganization = async (organization = { owner_id: '', name: '', image_url: '' }, client = null) => {
     console.log("Inserting new organization")
-    console.log(`Insert into ${DB_ORGANIZATIONS} set (owner_id, name, image_url) values('${organization.owner_id}', '${organization.name}', '${organization.image_url}') returning *`)
-    const organizationQuery = `Insert into ${DB_ORGANIZATIONS} set (owner_id, name, image_url) values($1,$2,$3) returning *`
+    console.log(`Insert into ${DB_ORGANIZATIONS} (owner_id, name, image_url) values('${organization.owner_id}', '${organization.name}', '${organization.image_url}') returning *`)
+    const organizationQuery = `Insert into ${DB_ORGANIZATIONS} (owner_id, name, image_url) values($1,$2,$3) returning *`
     let result;
     if (client) {
         result = await client.query(organizationQuery, [organization.owner_id, organization.name, organization.image_url])
@@ -101,8 +101,8 @@ const getRequestToJoinOrganizationFromUUID = async (uuid, client = null) => {
 
 const insertRequestToJoinOrganization = async (uuid, organization_id, client = null) => {
     console.log('Inserting request to join organization')
-    console.log(`Insert into ${DB_JOIN_REQUESTS} set (user_uuid, organization_id) values('${uuid}', ${organization_id}) returning *`)
-    const organizationQuery = `Insert into ${DB_JOIN_REQUESTS} set (user_uuid, organization_id) values($1,$2) returning *`
+    console.log(`Insert into ${DB_JOIN_REQUESTS} (user_uuid, organization_id) values('${uuid}', ${organization_id}) returning *`)
+    const organizationQuery = `Insert into ${DB_JOIN_REQUESTS} (user_uuid, organization_id) values($1,$2) returning *`
     let result;
     if (client) {
         result = await client.query(organizationQuery, [uuid, organization_id])
