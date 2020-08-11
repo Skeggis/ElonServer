@@ -88,8 +88,8 @@ const getJoinRequestsForOrganization = async (organization_id, client = null) =>
 
 const getRequestToJoinOrganizationFromUUID = async (uuid, client = null) => {
     console.log('Get My Request To Join Organization')
-    console.log(`Select * from ${DB_JOIN_REQUESTS} where user_id = '${uuid}'`)
-    const organizationQuery = `Select * from ${DB_JOIN_REQUESTS} where user_id = $1`
+    console.log(`Select * from ${DB_JOIN_REQUESTS} where user_uuid = '${uuid}'`)
+    const organizationQuery = `Select * from ${DB_JOIN_REQUESTS} where user_uuid = $1`
     let result;
     if (client) {
         result = await client.query(organizationQuery, [uuid])
