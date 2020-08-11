@@ -220,7 +220,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
     const joinRequestsResult = await getJoinRequestsForOrganization(organization_id)
 
     organization.members = formatMembers(membersResult.rows)
-    organization.join_requests = formatJoinRequest(joinRequestsResult.rows)
+    organization.join_requests = formatJoinRequests(joinRequestsResult.rows)
 
     return {
         success: true,
