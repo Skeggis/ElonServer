@@ -195,7 +195,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
     let organization = formatOrganization(organizationResult.rows[0])
 
     //This user is not the owner of this organization
-    if (organization.owner_id != uuid.toUpperCase()) {
+    if (!isSameUUID(organization.owner_id, uuid)) {
         return {
             success: false,
             message: "Something failed",
@@ -241,7 +241,7 @@ async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, u
     let organization = formatOrganization(organizationResult.rows[0])
 
     //This user is not the owner of this organization
-    if (organization.owner_id != uuid) {
+    if (!isSameUUID(organization.owner_id,uuid)) {
         return {
             success: false,
             message: "Something failed",
