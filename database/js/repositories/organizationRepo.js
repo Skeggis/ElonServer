@@ -112,7 +112,7 @@ const insertRequestToJoinOrganization = async (uuid, organization_id, client = n
     return result
 }
 
-const removeJoinRequest = async (user_uuid, organization_id) => {
+const removeJoinRequest = async (user_uuid, organization_id, client=null) => {
     console.log("Remove join request")
     console.log(`Delete from ${DB_JOIN_REQUESTS} where user_uuid = '${user_uuid}' and organization_id = ${organization_id}`)
     const organizationQuery = `Delete from ${DB_JOIN_REQUESTS} where user_uuid = $1 and organization_id = $2`
@@ -125,7 +125,7 @@ const removeJoinRequest = async (user_uuid, organization_id) => {
     return result
 }
 
-const deleteMemberFromOrganization = async (user_uuid, organization_id) => {
+const deleteMemberFromOrganization = async (user_uuid, organization_id, client=null) => {
     console.log("Delete member from organization")
     console.log(`Update ${DB_JOIN_REQUESTS} set organization_id = ${organization_id} where uuid = '${user_uuid}' returning *`)
     const organizationQuery = `Update ${DB_JOIN_REQUESTS} set organization_id = $1 where uuid = $2 returning *`
