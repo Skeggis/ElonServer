@@ -213,6 +213,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
     //     }
     // }
     if (accept) {
+        console.log("Accepting!")
         result = await updateUsersOrganizationMembership(user_uuid, organization_id)
     }
 
