@@ -127,8 +127,8 @@ const removeJoinRequest = async (user_uuid, organization_id, client=null) => {
 
 const deleteMemberFromOrganization = async (user_uuid, organization_id, client=null) => {
     console.log("Delete member from organization")
-    console.log(`Update ${DB_JOIN_REQUESTS} set organization_id = ${organization_id} where uuid = '${user_uuid}' returning *`)
-    const organizationQuery = `Update ${DB_JOIN_REQUESTS} set organization_id = $1 where uuid = $2 returning *`
+    console.log(`Update ${DB_USERS} set organization_id = ${organization_id} where uuid = '${user_uuid}' returning *`)
+    const organizationQuery = `Update ${DB_USERS} set organization_id = $1 where uuid = $2 returning *`
     let result;
     if (client) {
         result = await client.query(organizationQuery, [organization_id, user_uuid])
