@@ -171,7 +171,7 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
     return {
         success: true,
         joinRequest: formatJoinRequest(result.rows[0]),
-        organizationRequestedToJoin: formatOrganization(organizationResult.rows[0])
+        organization: formatOrganization(organizationResult.rows[0])
     }
 }
 
