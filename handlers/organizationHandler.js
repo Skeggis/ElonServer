@@ -104,7 +104,9 @@ async function getMyOrganizationHandler(uuid = '') {
         organization.members = formatMembers(membersResult.rows)
 
         let joinRequestsResult;
-        if (organization.owner_id == uuid) {
+        console.log(organization.owner_id, uuid)
+        console.log(organization.owner_id === uuid)
+        if (organization.owner_id === uuid) {
             joinRequestsResult = await getJoinRequestsForOrganization(organization.id, client)
             organization.join_requests = formatJoinRequests(joinRequestsResult.rows)
         }
