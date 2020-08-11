@@ -98,7 +98,7 @@ const formatMembers = members => {
 
 const formatMember = member => {
   return {
-    uuid: member.uuid,
+    uuid: member.uuid.toUpperCase(),
     id: member.id,
     name: member.name,
     photo_url:member.photo_url,
@@ -108,7 +108,7 @@ const formatMember = member => {
 
 const formatUser = user => {
   return {
-    uuid: user.uuid,
+    uuid: user.uuid.toUpperCase(),
     id: user.id,
     name: user.name,
     email: user.email,

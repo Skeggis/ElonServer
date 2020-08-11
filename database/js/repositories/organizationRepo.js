@@ -83,7 +83,7 @@ const getJoinRequestsForOrganization = async (organization_id, client = null) =>
     } else {
         result = await query(organizationQuery, [organization_id])
     }
-    return client
+    return result
 }
 
 const getRequestToJoinOrganizationFromUUID = async (uuid, client = null) => {
