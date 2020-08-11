@@ -85,6 +85,7 @@ const formatJoinRequests = joinRequests => {
 const formatJoinRequest = joinRequest => {
   return {
     ...formatMember(joinRequest),
+    uuid: joinRequest.user_uuid ? joinRequest.user_uuid.toUpperCase():"",
   }
 }
 

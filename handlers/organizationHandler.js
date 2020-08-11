@@ -104,9 +104,7 @@ async function getMyOrganizationHandler(uuid = '') {
         organization.members = formatMembers(membersResult.rows)
 
         let joinRequestsResult;
-        console.log(organization.owner_id.toLowerCase(), uuid.toLowerCase())
-        console.log(organization.owner_id.toLowerCase() === uuid.toLowerCase())
-        if (organization.owner_id.toLowerCase() === uuid.toLowerCase()) {
+        if (isSameUUID(organization.owner_id, uuid)) {
             joinRequestsResult = await getJoinRequestsForOrganization(organization.id, client)
             console.log(joinRequestsResult.rows)
             if(!joinRequestsResult){throw Error("Could not find joinRequests")}
@@ -179,6 +177,10 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
     }
 }
 
+function isSameUUID(uuid1, uuid2){
+    return uuid1.toUpperCase() === uuid2.toUpperCase()
+}
+
 
 //Todo: change this into using the transaction function
 async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept) {
@@ -193,7 +195,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
     let organization = formatOrganization(organizationResult.rows[0])
 
     //This user is not the owner of this organization
-    if (organization.owner_id != uuid) {
+    if (organization.owner_id != uuid.toUpperCase()) {
         return {
             success: false,
             message: "Something failed",
@@ -282,7 +284,7 @@ async function getOrganizationDataHandler(uuid, organization_id) {
     //Todo: Check if this user is a member of the organization and deny access if he is not.
 
     //This user is the owner of this organization
-    if (organization.owner_id == uuid) {
+    if (isSameUUID(organization.owner_id,uuid)) {
         const joinRequestResult = await getJoinRequestsForOrganization(organization_id)
         organization.join_requests = formatJoinRequests(joinRequestResult.rows)
     }
