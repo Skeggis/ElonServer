@@ -292,7 +292,7 @@ async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, u
     const joinRequestsResult = await getJoinRequestsForOrganization(organization_id)
 
     organization.members = formatMembers(membersResult.rows)
-    organization.join_requests = formatJoinRequests(joinRequestsResult)
+    organization.join_requests = formatJoinRequests(joinRequestsResult.rows)
 
     return {
         success: true,
