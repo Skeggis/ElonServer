@@ -53,7 +53,7 @@ async function createOrganizationHandler(organization = { owner_id: '', name: ''
         result = await createOrganization(organization, client)
 
         if (result.rows[0]) {
-            createdOrganization = formatOrganization(result.rows[0])
+            createdOrganization = formatOrganization(result.rows[0], owner_id)
             result = await updateUsersOrganizationMembership(organization.owner_id, createdOrganization.id, client)
             if (!result.rows[0]) { throw Error('Error updatingUsersMembership!') }
         }
@@ -82,7 +82,7 @@ async function refreshOrganizationsHandler(uuid = '') {
     result = await getAllOrganizations()
     return {
         success: true,
-        organizations: formatOrganizations(result.rows)
+        organizations: formatOrganizations(result.rows, uuid)
     }
 }
 
@@ -100,7 +100,7 @@ async function getMyOrganizationHandler(uuid = '') {
         result = await getAllOrganizations()
         return {
             success: true,
-            organizations: formatOrganizations(result.rows)
+            organizations: formatOrganizations(result.rows, uuid)
         }
     }
 
@@ -111,7 +111,7 @@ async function getMyOrganizationHandler(uuid = '') {
 
         if (!result.rows[0]) { throw Error("Could not find organization of client ") }
 
-        organization = formatOrganization(result.rows[0])
+        organization = formatOrganization(result.rows[0], uuid)
         const membersResult = await getMembersOfOrganization(user.organization_id, client)
 
         if (!membersResult.rows[0]) { throw Error("Could not find organization of client ") }
@@ -187,7 +187,7 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
     return {
         success: true,
         joinRequest: formatJoinRequest(result.rows[0]),
-        organization: formatOrganization(organizationResult.rows[0])
+        organization: formatOrganization(organizationResult.rows[0], uuid)
     }
 }
 
@@ -206,7 +206,7 @@ async function answerJoinRequestHandler(user_uuid, organization_id, uuid, accept
             errors: ["This organization doth not exist"]
         }
     }
-    let organization = formatOrganization(organizationResult.rows[0])
+    let organization = formatOrganization(organizationResult.rows[0], uuid)
 
     //This user is not the owner of this organization
     if (!isSameUUID(organization.owner_id, uuid)) {
@@ -267,7 +267,7 @@ async function leaveOrganizationHandler(organization_id, uuid) {
     result = await getAllOrganizations()
     return {
         success: true,
-        organizations: formatOrganizations(result.rows)
+        organizations: formatOrganizations(result.rows, uuid)
     }
 
 }
@@ -282,7 +282,7 @@ async function deleteMemberFromOrganizationHandler(user_uuid, organization_id, u
             errors: ["This organization doth not exist"]
         }
     }
-    let organization = formatOrganization(organizationResult.rows[0])
+    let organization = formatOrganization(organizationResult.rows[0], uuid)
 
     //This user is not the owner of this organization
     if (!isSameUUID(organization.owner_id, uuid)) {
@@ -323,7 +323,7 @@ async function getOrganizationDataHandler(uuid, organization_id) {
             errors: ["This organization doth not exist"]
         }
     }
-    let organization = formatOrganization(organizationResult.rows[0])
+    let organization = formatOrganization(organizationResult.rows[0], uuid)
 
     //Todo: Check if this user is a member of the organization and deny access if he is not.
 

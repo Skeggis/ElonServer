@@ -55,19 +55,24 @@ const formatShot = shot => {
   }
 }
 
-const formatOrganizations = organizations => {
+const formatOrganizations = (organizations,uuid) => {
   let formattedOrganizations = []
   organizations.forEach(organization => {
-    formattedOrganizations.push(formatOrganization(organization))
+    formattedOrganizations.push(formatOrganization(organization, uuid))
   })
   return formattedOrganizations
 }
 
-const formatOrganization = organization => {
+function isSameUUID(uuid1, uuid2) {
+  return uuid1.toUpperCase() === uuid2.toUpperCase()
+}
+
+const formatOrganization = (organization, uuid) => {
   return {
     id: organization.id,
     name: organization.name,
     owner_id: organization.owner_id,
+    isOwner: uuid ? isSameUUID(organization.owner_id, uuid):false,
     image_url: organization.image_url,
     members: organization.members ? organization.members:[],
     join_requests: organization.join_requests ? organization.join_requests: []
