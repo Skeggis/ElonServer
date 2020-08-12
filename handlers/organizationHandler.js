@@ -72,6 +72,20 @@ async function createOrganizationHandler(organization = { owner_id: '', name: ''
     }
 }
 
+async function refreshOrganizationsHandler(uuid = '') {
+    const userResult = await getUserByUUID(uuid);
+    if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
+
+    const user = formatUser(userResult.rows[0])
+    let result;
+
+    result = await getAllOrganizations()
+    return {
+        success: true,
+        organizations: formatOrganizations(result.rows)
+    }
+}
+
 
 //Returns the organization uuid is a part of, or:
 //Returns all organizations if user is not a part of any organization (so he/she can choose an organization to join)
@@ -336,5 +350,6 @@ module.exports = {
     answerJoinRequestHandler,
     deleteMemberFromOrganizationHandler,
     getOrganizationDataHandler,
-    leaveOrganizationHandler
+    leaveOrganizationHandler,
+    refreshOrganizationsHandler
 }
