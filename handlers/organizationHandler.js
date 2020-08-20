@@ -9,7 +9,9 @@ const {
     getRequestToJoinOrganizationFromUUID,
     removeJoinRequest,
     deleteMemberFromOrganization,
-    editOrganization
+    editOrganization,
+    deleteAllMembersOfOrganization,
+    deleteOrganization
 } = require('../database/js/repositories/organizationRepo')
 
 const {
@@ -344,9 +346,9 @@ async function getOrganizationDataHandler(uuid, organization_id) {
 
 }
 
-async function editOrganizationHandler(organization = { owner_id: '', name: '', image_url: '', id:'' }) {
+async function dothUserExist(uuid){
 
-    const userResult = await getUserByUUID(organization.owner_id);
+    const userResult = await getUserByUUID(uuid);
 
     if (userResult.rowCount == 0 || userResult.rowCount >= 2) {
         return {
@@ -356,9 +358,11 @@ async function editOrganizationHandler(organization = { owner_id: '', name: '', 
         }
     }
 
-    const user = formatUser(userResult.rows[0])
+    return {success: true, user: formatUser(userResult.rows[0])}
+}
 
-    const organizationResult = await getOrganizationFromId(organization.id)
+async function dothOrganizationExist(organization_id, uuid){
+    const organizationResult = await getOrganizationFromId(organization_id)
     if (!organizationResult.rows[0]) {
         return {
             success: false,
@@ -366,7 +370,19 @@ async function editOrganizationHandler(organization = { owner_id: '', name: '', 
             errors: ["This organization doth not exist"]
         }
     }
-    let oldOrganization = formatOrganization(organizationResult.rows[0], organization.owner_id)
+
+    return {success: true, organization: formatOrganization(organizationResult.rows[0], uuid)}
+}
+
+async function editOrganizationHandler(organization = { owner_id: '', name: '', image_url: '', id:'' }) {
+
+    const dothUserExistResult = await dothUserExist(organization.owner_id)
+    if(!dothUserExistResult.success){return dothUserExistResult}
+
+    const dothOrganizationExistResult = await dothOrganizationExist(organization.id, organization.owner_id)
+    if(!dothOrganizationExistResult.success){return dothOrganizationExistResult}
+    
+    let oldOrganization = dothOrganizationExistResult.organization
 
     //This user is not the owner of this organization
     if (!isSameUUID(oldOrganization.owner_id, organization.owner_id)) {
@@ -386,11 +402,53 @@ async function editOrganizationHandler(organization = { owner_id: '', name: '', 
         }
     }
 
-    let  newOrganization = formatOrganization(result.rows[0], organization.owner_id)
-    return {
-        success: true,
-        organization: newOrganization
+    return getMyOrganizationHandler(organization.owner_id);
+}
+
+//Todo: change this into using the transaction function
+async function deleteOrganizationHandler(uuid, organization_id) {
+    const dothUserExistResult = await dothUserExist(uuid)
+    if(!dothUserExistResult.success){return dothUserExistResult}
+
+    const dothOrganizationExistResult = await dothOrganizationExist(organization_id, uuid)
+    if(!dothOrganizationExistResult.success){return dothOrganizationExistResult}
+    
+    let organization = dothOrganizationExistResult.organization
+
+    //This user is not the owner of this organization
+    if (!isSameUUID(organization.owner_id, uuid)) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["You do not have permission to this action."]
+        }
     }
+
+    let result;
+    const transactionResult = await transaction(async client => {
+
+        result = await deleteOrganization(organization_id, client);
+
+        if (result.rows[0]) {
+            let updateMembershipsResult = await deleteAllMembersOfOrganization(organization_id, client)
+            if(!updateMembershipsResult.rows[0]){
+                throw Error('Error updating memberships!')
+            }
+
+        } else {
+            throw Error('Error deleting org!')
+        }
+    })
+
+    if (!transactionResult.success) {
+        return {
+            success: false,
+            message: "Server error",
+            errors: ["We made a mistake."]
+        }
+    }
+
+    return await getMyOrganizationHandler(uuid)
 }
 
 module.exports = {
@@ -402,5 +460,6 @@ module.exports = {
     getOrganizationDataHandler,
     leaveOrganizationHandler,
     refreshOrganizationsHandler,
-    editOrganizationHandler
+    editOrganizationHandler,
+    deleteOrganizationHandler
 }

@@ -151,6 +151,32 @@ const editOrganization = async (organization = { owner_id: '', name: '', image_u
     return result
 }
 
+async function deleteOrganization(organization_id, client){
+    console.log("Deleting organization")
+    console.log(`delete from ${DB_ORGANIZATIONS} where id=${organization_id} returning *`)
+    const organizationQuery = `delete from ${DB_ORGANIZATIONS} where id=$1 returning *`
+    let result;
+    if (client) {
+        result = await client.query(organizationQuery, [organization_id])
+    } else {
+        result = await query(organizationQuery, [organization_id])
+    }
+    return result
+}
+
+async function deleteAllMembersOfOrganization(organization_id, client){
+    console.log("Deleting members from organization")
+    console.log(`update ${DB_ORGANIZATIONS} SET organization_id = null where organization_id = ${organization_id} returning *`)
+    const organizationQuery = `update ${DB_ORGANIZATIONS} SET organization_id = null where organization_id = $1 returning *`
+    let result;
+    if (client) {
+        result = await client.query(organizationQuery, [organization_id])
+    } else {
+        result = await query(organizationQuery, [organization_id])
+    }
+    return result
+}
+
 
 
 
@@ -168,5 +194,7 @@ module.exports = {
     getRequestToJoinOrganizationFromUUID,
     removeJoinRequest,
     deleteMemberFromOrganization,
-    editOrganization
+    editOrganization,
+    deleteAllMembersOfOrganization,
+    deleteOrganization
 }

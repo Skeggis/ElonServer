@@ -194,6 +194,28 @@ async function editOrganization(req, res){
     return res.status(200).json(result)
 }
 
+async function deleteOrganization(req, res){
+    const {
+        uuid = '',
+        organization_id = ''
+
+    } = req.body
+
+    if (!(uuid && organization_id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Client error",
+            errors: ["Please submit all fields"]
+        })
+    }
+
+    const result = await deleteOrganizationHandler(uuid, organization_id)
+
+    if (!result.success) { return res.status(401).json(result) }
+
+    return res.status(200).json(result)
+}
+
 router.post('/createOrganization', createOrganization)
 router.post('/getMyOrganization', getMyOrganization)
 router.post('/requestToJoinOrganization', requestToJoinOrganization)
@@ -203,5 +225,6 @@ router.post('/refreshOrganization', refreshOrganizationData)
 router.post('/refreshOrganizations', refreshOrganizations)
 router.post('/leaveOrganization', leaveOrganization)
 router.post('/editOrganization', editOrganization)
+router.post('/deleteOrganization', deleteOrganization)
 
 module.exports = router
