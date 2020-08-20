@@ -427,11 +427,12 @@ async function deleteOrganizationHandler(uuid, organization_id) {
     let result;
     const transactionResult = await transaction(async client => {
 
-        result = await deleteOrganization(organization_id, client);
-
-        if (result.rows[0]) {
-            let updateMembershipsResult = await deleteAllMembersOfOrganization(organization_id, client)
-            if(!updateMembershipsResult.rows[0]){
+        
+        let updateMembershipsResult = await deleteAllMembersOfOrganization(organization_id, client)
+        if (updateMembershipsResult.rows[0]) {
+            
+            result = await deleteOrganization(organization_id, client);
+            if(!result.rows[0]){
                 throw Error('Error updating memberships!')
             }
 
