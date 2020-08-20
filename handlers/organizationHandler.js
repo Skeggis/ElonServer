@@ -8,7 +8,8 @@ const {
     insertRequestToJoinOrganization,
     getRequestToJoinOrganizationFromUUID,
     removeJoinRequest,
-    deleteMemberFromOrganization
+    deleteMemberFromOrganization,
+    editOrganization
 } = require('../database/js/repositories/organizationRepo')
 
 const {
@@ -343,6 +344,55 @@ async function getOrganizationDataHandler(uuid, organization_id) {
 
 }
 
+async function editOrganizationHandler(organization = { owner_id: '', name: '', image_url: '', id:'' }) {
+
+    const userResult = await getUserByUUID(organization.owner_id);
+
+    if (userResult.rowCount == 0 || userResult.rowCount >= 2) {
+        return {
+            success: false,
+            message: "Client error",
+            errors: ["You don't exist in our database."]
+        }
+    }
+
+    const user = formatUser(userResult.rows[0])
+
+    const organizationResult = await getOrganizationFromId(organization.id)
+    if (!organizationResult.rows[0]) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["This organization doth not exist"]
+        }
+    }
+    let oldOrganization = formatOrganization(organizationResult.rows[0], organization.owner_id)
+
+    //This user is not the owner of this organization
+    if (!isSameUUID(oldOrganization.owner_id, organization.owner_id)) {
+        return {
+            success: false,
+            message: "Something failed",
+            errors: ["You do not have permission to this action."]
+        }
+    }
+
+    let result = await editOrganization(organization)
+    if (!result.rows[0]) {
+        return {
+            success: false,
+            message: "Server error",
+            errors: ["We made a mistake editing your organization. Sorry."]
+        }
+    }
+
+    let  newOrganization = formatOrganization(result.rows[0], organization.owner_id)
+    return {
+        success: true,
+        organization: newOrganization
+    }
+}
+
 module.exports = {
     createOrganizationHandler,
     getMyOrganizationHandler,
@@ -351,5 +401,6 @@ module.exports = {
     deleteMemberFromOrganizationHandler,
     getOrganizationDataHandler,
     leaveOrganizationHandler,
-    refreshOrganizationsHandler
+    refreshOrganizationsHandler,
+    editOrganizationHandler
 }

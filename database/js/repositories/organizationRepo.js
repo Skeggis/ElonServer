@@ -138,6 +138,21 @@ const deleteMemberFromOrganization = async (user_uuid, organization_id, client=n
     return result
 }
 
+const editOrganization = async (organization = { owner_id: '', name: '', image_url: '', id: '' }, client = null) => {
+    console.log("Updating organization")
+    console.log(`update ${DB_ORGANIZATIONS} SET (name, image_url) =  ('${organization.name}', '${organization.image_url}') returning *`)
+    const organizationQuery = `update ${DB_ORGANIZATIONS} set (name, image_url) values($1,$2) returning *`
+    let result;
+    if (client) {
+        result = await client.query(organizationQuery, [organization.name, organization.image_url])
+    } else {
+        result = await query(organizationQuery, [organization.name, organization.image_url])
+    }
+    return result
+}
+
+
+
 
 
 
@@ -152,5 +167,6 @@ module.exports = {
     insertRequestToJoinOrganization,
     getRequestToJoinOrganizationFromUUID,
     removeJoinRequest,
-    deleteMemberFromOrganization
+    deleteMemberFromOrganization,
+    editOrganization
 }

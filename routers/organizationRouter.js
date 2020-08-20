@@ -9,7 +9,8 @@ const {
     deleteMemberFromOrganizationHandler,
     getOrganizationDataHandler,
     leaveOrganizationHandler,
-    refreshOrganizationsHandler
+    refreshOrganizationsHandler,
+    editOrganizationHandler
 } = require('../handlers/organizationHandler')
 
 async function createOrganization(req, res) {
@@ -162,6 +163,37 @@ async function refreshOrganizations(req, res) {
     return res.status(200).json(result)
 }
 
+async function editOrganization(req, res){
+    const {
+        uuid = '',
+        imageUrl = '', //Url to the 
+        name = '', //OrganizationName
+        organization_id = ''
+
+    } = req.body
+
+    if (!(uuid && name && organization_id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Client error",
+            errors: ["Please submit all fields"]
+        })
+    }
+
+    const organization = {
+        owner_id: uuid,
+        name: name,
+        image_url: imageUrl,
+        id: organization_id
+    }
+
+    const result = await editOrganizationHandler(organization)
+
+    if (!result.success) { return res.status(401).json(result) }
+
+    return res.status(200).json(result)
+}
+
 router.post('/createOrganization', createOrganization)
 router.post('/getMyOrganization', getMyOrganization)
 router.post('/requestToJoinOrganization', requestToJoinOrganization)
@@ -170,5 +202,6 @@ router.post('/deleteMemberFromOrganization', deleteMemberFromOrganization)
 router.post('/refreshOrganization', refreshOrganizationData)
 router.post('/refreshOrganizations', refreshOrganizations)
 router.post('/leaveOrganization', leaveOrganization)
+router.post('/editOrganization', editOrganization)
 
 module.exports = router
