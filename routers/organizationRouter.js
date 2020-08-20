@@ -10,7 +10,8 @@ const {
     getOrganizationDataHandler,
     leaveOrganizationHandler,
     refreshOrganizationsHandler,
-    editOrganizationHandler
+    editOrganizationHandler,
+    deleteOrganizationHandler
 } = require('../handlers/organizationHandler')
 
 async function createOrganization(req, res) {
