@@ -166,8 +166,8 @@ async function deleteOrganization(organization_id, client){
 
 async function deleteAllMembersOfOrganization(organization_id, client){
     console.log("Deleting members from organization")
-    console.log(`update ${DB_ORGANIZATIONS} SET organization_id = null where organization_id = ${organization_id} returning *`)
-    const organizationQuery = `update ${DB_ORGANIZATIONS} SET organization_id = null where organization_id = $1 returning *`
+    console.log(`update ${DB_USERS} SET organization_id = null where organization_id = ${organization_id} returning *`)
+    const organizationQuery = `update ${DB_USERS} SET organization_id = null where organization_id = $1 returning *`
     let result;
     if (client) {
         result = await client.query(organizationQuery, [organization_id])
