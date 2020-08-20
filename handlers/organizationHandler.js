@@ -53,7 +53,7 @@ async function createOrganizationHandler(organization = { owner_id: '', name: ''
         result = await createOrganization(organization, client)
 
         if (result.rows[0]) {
-            createdOrganization = formatOrganization(result.rows[0], owner_id)
+            createdOrganization = formatOrganization(result.rows[0], organization.owner_id)
             result = await updateUsersOrganizationMembership(organization.owner_id, createdOrganization.id, client)
             if (!result.rows[0]) { throw Error('Error updatingUsersMembership!') }
         }
