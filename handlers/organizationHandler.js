@@ -69,6 +69,8 @@ async function createOrganizationHandler(organization = { owner_id: '', name: ''
             errors: ["We made a mistake."]
         }
     }
+
+    return await getMyOrganizationHandler(organization.owner_id)
     return {
         success: true,
         organization: createdOrganization
