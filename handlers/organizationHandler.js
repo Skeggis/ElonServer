@@ -385,9 +385,8 @@ async function editOrganizationHandler(organization = { owner_id: '', name: '', 
             errors: ["We made a mistake editing your organization. Sorry."]
         }
     }
-console.log(result.rows[0], organization)
+
     let  newOrganization = formatOrganization(result.rows[0], organization.owner_id)
-    newOrganization.isOwner = true;
     return {
         success: true,
         organization: newOrganization
