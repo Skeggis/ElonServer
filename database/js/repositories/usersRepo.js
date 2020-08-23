@@ -2,7 +2,8 @@ const { query } = require('../query')
 
 const {
   DB_USERS,
-  DB_ORGANIZATIONS
+  DB_ORGANIZATIONS,
+  DB_JOIN_REQUESTS,
 } = process.env
 
 const getUserByUUID = async (uuid, client=null) => {
@@ -40,7 +41,7 @@ const insertUser = async (user = {email, uuid, password, googleId, name, photoUr
     const usersQuery = `INSERT INTO ${DB_USERS} (email, uuid, password, google_id, name, photo_url)  VALUES ($1,$2,$3,$4,$5,$6) returning *`
 
     let result;
-    if(result){
+    if(client){
       result = await client.query(usersQuery, [user.email.toLowerCase(), user.uuid, user.password, user.googleId, user.name, user.photoUrl])
     } else {
       result = await query(usersQuery, [user.email.toLowerCase(), user.uuid, user.password, user.googleId, user.name, user.photoUrl])
@@ -69,5 +70,5 @@ module.exports = {
   getUserByEmail,
   insertUser,
   updateUserByEmailAndGoogleId,
-  getUserByUUID
+  getUserByUUID,
 }

@@ -38,7 +38,7 @@ async function googleLogin(req, res) {
 async function login(req, res) {
     const { email = '', password = '' } = req.body
 
-    if (!(email && password)) {
+    if (!(email && password)) { //mun þetta einhvern tíman verða true því þú setur default email og pass sem tóma strenginn
         return res.status(400).json({
             success: false,
             message: "Client error",

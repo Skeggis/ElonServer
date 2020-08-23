@@ -4,6 +4,10 @@ const {
     updateUserByEmailAndGoogleId
 } = require('../database/js/repositories/usersRepo')
 
+const {
+    getRequestToJoinOrganizationFromUUID, getOrganizationFromId
+} = require('../database/js/repositories/organizationRepo')
+
 const { v4: uuidv4 } = require('uuid');
 
 const {
@@ -58,6 +62,11 @@ const getUserByEmailHandler = async (email) => {
             success: false,
             errors: ["Email or password are incorrect"]
         }
+    }
+
+    const joinResult =getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
+    if(joinResult.rows > 0){
+        result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
     }
 
     return {
