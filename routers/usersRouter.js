@@ -141,6 +141,7 @@ async function hashPassword(user) {
 
 async function getUser(req, res) {
     const userResult = await getUSerByUUIDHandler(req.params.uuid)
+    console.log(req.params.uuid)
     if (userResult.success) {
         res.status(200).json({
             success: true,
