@@ -1,7 +1,8 @@
 const {
     getUserByEmail,
     insertUser,
-    updateUserByEmailAndGoogleId
+    updateUserByEmailAndGoogleId,
+    getUserByUUID
 } = require('../database/js/repositories/usersRepo')
 
 const {
@@ -77,7 +78,7 @@ const getUserByEmailHandler = async (email) => {
 }
 
 const getUSerByUUIDHandler = async (UUID) => {
-    const result = await getUSerByUUID(UUID)
+    const result = await getUserByUUID(UUID)
 
     if (!result.rows[0]) {
         return {
