@@ -122,7 +122,8 @@ const formatUser = user => {
     organization_id: user.organization_id,
     photo_url: user.photo_url,
     google_id: user.google_id,
-    created: user.created
+    created: user.created,
+    requestOrganization: user.requestOrganization
   }
 }
 
