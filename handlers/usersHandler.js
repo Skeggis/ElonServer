@@ -20,38 +20,39 @@ const isEmailRegistered = async (email) => {
     return result.rowCount > 0
 }
 
-const signInWithGoogleHandler = async (user={email, googleId, photoUrl, name}) => {
+const signInWithGoogleHandler = async (user = { email, googleId, photoUrl, name }) => {
 
     let result;
     const transactionResult = await transaction(async client => {
 
         result = await updateUserByEmailAndGoogleId(user, client)
 
-        if(!result.rows[0]){ 
+        if (!result.rows[0]) {
             user.uuid = uuidv4()
-            result = await insertUser(user, client) }
-      })
+            result = await insertUser(user, client)
+        }
+    })
 
-      if(transactionResult.success){
+    if (transactionResult.success) {
         if (!result.rows[0]) {
             return {
                 success: false,
                 errors: ["Error trying to create the user"]
             }
         }
-    
+
         return {
             success: true,
             user: formatUser(result.rows[0])
         }
 
-      } else {
-          return {
-              success: false,
-              erros: ["Error trying to create user"]
-          }
-      }
-    
+    } else {
+        return {
+            success: false,
+            erros: ["Error trying to create user"]
+        }
+    }
+
 }
 
 const getUserByEmailHandler = async (email) => {
@@ -64,8 +65,8 @@ const getUserByEmailHandler = async (email) => {
         }
     }
 
-    const joinResult =getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
-    if(joinResult.rows > 0){
+    const joinResult = getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
+    if (joinResult.rows.length > 0) {
         result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
     }
 
@@ -75,7 +76,28 @@ const getUserByEmailHandler = async (email) => {
     }
 }
 
-const createUserHandler = async (user = { email,name, uuid, password }) => {
+const getUSerByUUIDHandler = async (UUID) => {
+    const result = await getUSerByUUID(UUID)
+
+    if (!result.rows[0]) {
+        return {
+            success: false,
+            errors: ["You do not exist"]
+        }
+    }
+
+    const joinResult = getRequestToJoinOrganizationFromUUID(UUID)
+    if (joinResult.rows.length > 0) {
+        result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
+    }
+
+    return {
+        success: tru,
+        user: formatUser(result.rows[0])
+    }
+}
+
+const createUserHandler = async (user = { email, name, uuid, password }) => {
     const result = await insertUser(user)
     if (result.rowCount == 0) {
         return {
@@ -90,4 +112,10 @@ const createUserHandler = async (user = { email,name, uuid, password }) => {
     }
 }
 
-module.exports = { isEmailRegistered, createUserHandler, getUserByEmailHandler, signInWithGoogleHandler }
+module.exports = {
+    isEmailRegistered, 
+    createUserHandler, 
+    getUserByEmailHandler, 
+    signInWithGoogleHandler, 
+    getUSerByUUIDHandler,
+}

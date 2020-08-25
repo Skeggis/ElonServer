@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
-const { isEmailRegistered, createUserHandler, getUserByEmailHandler, signInWithGoogleHandler } = require('../handlers/usersHandler.js')
+const { isEmailRegistered, createUserHandler, getUserByEmailHandler, signInWithGoogleHandler, getUSerByUUIDHandler } = require('../handlers/usersHandler.js')
 
 
 async function googleLogin(req, res) {
@@ -32,7 +32,7 @@ async function googleLogin(req, res) {
 
     return res.status(200).json(result)
 
-    
+
 }
 
 async function login(req, res) {
@@ -52,17 +52,17 @@ async function login(req, res) {
         return res.status(401).json(result)
     }
 
-    if(await comparePasswords(password, result.user.password)){
+    if (await comparePasswords(password, result.user.password)) {
         return res.status(200).json(result)
     }
 
-    return res.status(401).json({success: false, errors: ["Email or password are incorrect"]})
+    return res.status(401).json({ success: false, errors: ["Email or password are incorrect"] })
 
-    
+
 }
 
 async function signUp(req, res) {
-    const { email = '', name='',password = '', confirmPassword = '' } = req.body
+    const { email = '', name = '', password = '', confirmPassword = '' } = req.body
 
     const errors = []
 
@@ -139,10 +139,23 @@ async function hashPassword(user) {
     return hashedPassword
 }
 
+async function getUser(req, res) {
+    const userResult = await getUSerByUUIDHandler(req.params.uuid)
+    if (userResult.success) {
+        res.status(200).json({
+            success: true,
+            user: userResult.user
+        })
+    } else {
+        res.status(400).json(userResult)
+    }
+}
+
 
 router.post('/signUp', signUp);
 router.post('/login', login)
 router.post('/logout', logout)
 router.post('/googleLogin', googleLogin)
+router.get('/:uuid', getUser)
 
 module.exports = router;
