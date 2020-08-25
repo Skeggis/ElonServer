@@ -87,7 +87,7 @@ const getUSerByUUIDHandler = async (UUID) => {
         }
     }
 
-    const joinResult = getRequestToJoinOrganizationFromUUID(UUID)
+    const joinResult = await getRequestToJoinOrganizationFromUUID(UUID)
     if (joinResult.rows.length > 0) {
         result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
     }
