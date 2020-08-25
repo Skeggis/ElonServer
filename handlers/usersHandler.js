@@ -93,9 +93,10 @@ const getUSerByUUIDHandler = async (UUID) => {
         result.rows[0].requestOrganization = organizationResult.rows[0]
     }
 
+    const user = formatUser(result.rows[0])
     return {
         success: true,
-        user: formatUser(result.rows[0])
+        user
     }
 }
 
