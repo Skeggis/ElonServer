@@ -93,7 +93,7 @@ const getUSerByUUIDHandler = async (UUID) => {
     }
 
     return {
-        success: tru,
+        success: true,
         user: formatUser(result.rows[0])
     }
 }
