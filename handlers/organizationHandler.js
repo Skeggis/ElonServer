@@ -104,11 +104,11 @@ async function getMyOrganizationHandler(uuid = '') {
     //User is not a member of an organization
     if (!user.organization_id) {
         result = await getAllOrganizations()
-        let joinRequesResult = await getRequestToJoinOrganizationFromUUID(uuid)
+        let joinRequestResult = await getRequestToJoinOrganizationFromUUID(uuid)
         return {
             success: true,
             organizations: formatOrganizations(result.rows, uuid),
-            requestingOrganization: joinRequesResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id))
+            requestingOrganization: joinRequestResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id))
         }
     }
 
@@ -162,10 +162,10 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
         }
     }
 
-    const joinRequesResult = await getRequestToJoinOrganizationFromUUID(uuid)
+    const joinRequestResult = await getRequestToJoinOrganizationFromUUID(uuid)
 
     //Already request being processed
-    if (joinRequesResult.rows[0]) {
+    if (joinRequestResult.rows[0]) {
         return {
             success: false,
             message: "User has an active join request",
