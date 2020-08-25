@@ -94,6 +94,7 @@ async function refreshOrganizationsHandler(uuid = '') {
 
 //Returns the organization uuid is a part of, or:
 //Returns all organizations if user is not a part of any organization (so he/she can choose an organization to join)
+//and return requesting organization if not in organization
 async function getMyOrganizationHandler(uuid = '') {
     const userResult = await getUserByUUID(uuid);
     if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
@@ -103,9 +104,11 @@ async function getMyOrganizationHandler(uuid = '') {
     //User is not a member of an organization
     if (!user.organization_id) {
         result = await getAllOrganizations()
+        let joinRequesResult = await getRequestToJoinOrganizationFromUUID(uuid)
         return {
             success: true,
-            organizations: formatOrganizations(result.rows, uuid)
+            organizations: formatOrganizations(result.rows, uuid),
+            requestingOrganization: joinRequesResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id))
         }
     }
 
