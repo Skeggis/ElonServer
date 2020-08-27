@@ -105,10 +105,17 @@ async function getMyOrganizationHandler(uuid = '') {
     if (!user.organization_id) {
         result = await getAllOrganizations()
         let joinRequestResult = await getRequestToJoinOrganizationFromUUID(uuid)
+        let requestingOrg
+        if(joinRequestResult.rows.length === 0){
+            requestingOrg = null;
+        } else {
+            const res = await getOrganizationFromId(joinRequestResult.rows[0].organization_id)
+            requestingOrg = formatOrganization(res.rows[0])
+        }
         return {
             success: true,
             organizations: formatOrganizations(result.rows, uuid),
-            requestingOrganization: joinRequestResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id))
+            requestingOrganization: requestingOrg
         }
     }
 
