@@ -108,7 +108,7 @@ async function getMyOrganizationHandler(uuid = '') {
         return {
             success: true,
             organizations: formatOrganizations(result.rows, uuid),
-            requestingOrganization: joinRequestResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id), uuid)
+            requestingOrganization: joinRequestResult.rows.length == 0 ? null : formatOrganization(await getOrganizationFromId(joinRequestResult.rows[0].organization_id))
         }
     }
 
