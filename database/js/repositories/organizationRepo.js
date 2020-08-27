@@ -55,6 +55,7 @@ const getOrganizationFromId = async (organization_id, client = null) => {
     } else {
         result = await query(organizationQuery, [organization_id])
     }
+    console.log(result.rows)
     return result
 
 }
