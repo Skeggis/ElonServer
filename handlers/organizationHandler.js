@@ -11,7 +11,8 @@ const {
     deleteMemberFromOrganization,
     editOrganization,
     deleteAllMembersOfOrganization,
-    deleteOrganization
+    deleteOrganization,
+    deleteJoinRequest
 } = require('../database/js/repositories/organizationRepo')
 
 const {
@@ -106,7 +107,7 @@ async function getMyOrganizationHandler(uuid = '') {
         result = await getAllOrganizations()
         let joinRequestResult = await getRequestToJoinOrganizationFromUUID(uuid)
         let requestingOrg
-        if(joinRequestResult.rows.length === 0){
+        if (joinRequestResult.rows.length === 0) {
             requestingOrg = null;
         } else {
             const res = await getOrganizationFromId(joinRequestResult.rows[0].organization_id)
@@ -208,6 +209,24 @@ async function requestToJoinOrganizationHandler(uuid, organization_id) {
 
 function isSameUUID(uuid1, uuid2) {
     return uuid1.toUpperCase() === uuid2.toUpperCase()
+}
+
+async function deleteJoinRequestHandler(uuid, organization_id) {
+    const userResult = await getUserByUUID(uuid);
+    if (!userResult.rows[0]) { return { success: false, message: `Could not find this uuid: ${uuid}`, errors: ["Client sent invalid uuid"] } }
+
+    const orgResult = await getOrganizationFromId(organization_id)
+    if (!orgResult.rows[0]) {
+        return { success: false, message: 'The organization does not exist', errors: [`Organization with id: ${organization_id}, does not exist`] }
+    }
+
+    const result = await deleteJoinRequest(uuid, organization_id);
+
+    //todo: actually check if delete went through? + check if request exists?
+    return {
+        success: true,
+        message: "Successfully deleted request to join organization"
+    }
 }
 
 
@@ -358,7 +377,7 @@ async function getOrganizationDataHandler(uuid, organization_id) {
 
 }
 
-async function dothUserExist(uuid){
+async function dothUserExist(uuid) {
 
     const userResult = await getUserByUUID(uuid);
 
@@ -370,10 +389,10 @@ async function dothUserExist(uuid){
         }
     }
 
-    return {success: true, user: formatUser(userResult.rows[0])}
+    return { success: true, user: formatUser(userResult.rows[0]) }
 }
 
-async function dothOrganizationExist(organization_id, uuid){
+async function dothOrganizationExist(organization_id, uuid) {
     const organizationResult = await getOrganizationFromId(organization_id)
     if (!organizationResult.rows[0]) {
         return {
@@ -383,17 +402,17 @@ async function dothOrganizationExist(organization_id, uuid){
         }
     }
 
-    return {success: true, organization: formatOrganization(organizationResult.rows[0], uuid)}
+    return { success: true, organization: formatOrganization(organizationResult.rows[0], uuid) }
 }
 
-async function editOrganizationHandler(organization = { owner_id: '', name: '', image_url: '', id:'' }) {
+async function editOrganizationHandler(organization = { owner_id: '', name: '', image_url: '', id: '' }) {
 
     const dothUserExistResult = await dothUserExist(organization.owner_id)
-    if(!dothUserExistResult.success){return dothUserExistResult}
+    if (!dothUserExistResult.success) { return dothUserExistResult }
 
     const dothOrganizationExistResult = await dothOrganizationExist(organization.id, organization.owner_id)
-    if(!dothOrganizationExistResult.success){return dothOrganizationExistResult}
-    
+    if (!dothOrganizationExistResult.success) { return dothOrganizationExistResult }
+
     let oldOrganization = dothOrganizationExistResult.organization
 
     //This user is not the owner of this organization
@@ -420,11 +439,11 @@ async function editOrganizationHandler(organization = { owner_id: '', name: '', 
 //Todo: change this into using the transaction function
 async function deleteOrganizationHandler(uuid, organization_id) {
     const dothUserExistResult = await dothUserExist(uuid)
-    if(!dothUserExistResult.success){return dothUserExistResult}
+    if (!dothUserExistResult.success) { return dothUserExistResult }
 
     const dothOrganizationExistResult = await dothOrganizationExist(organization_id, uuid)
-    if(!dothOrganizationExistResult.success){return dothOrganizationExistResult}
-    
+    if (!dothOrganizationExistResult.success) { return dothOrganizationExistResult }
+
     let organization = dothOrganizationExistResult.organization
 
     //This user is not the owner of this organization
@@ -439,12 +458,12 @@ async function deleteOrganizationHandler(uuid, organization_id) {
     let result;
     const transactionResult = await transaction(async client => {
 
-        
+
         let updateMembershipsResult = await deleteAllMembersOfOrganization(organization_id, client)
         if (updateMembershipsResult.rows[0]) {
-            
+
             result = await deleteOrganization(organization_id, client);
-            if(!result.rows[0]){
+            if (!result.rows[0]) {
                 throw Error('Error updating memberships!')
             }
 
@@ -474,5 +493,6 @@ module.exports = {
     leaveOrganizationHandler,
     refreshOrganizationsHandler,
     editOrganizationHandler,
-    deleteOrganizationHandler
+    deleteOrganizationHandler,
+    deleteJoinRequestHandler
 }

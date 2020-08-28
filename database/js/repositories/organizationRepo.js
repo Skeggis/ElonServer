@@ -177,7 +177,17 @@ async function deleteAllMembersOfOrganization(organization_id, client){
     return result
 }
 
+async function deleteJoinRequest(uuid, organization_id, client){
+    const queryString = `delete from ${DB_JOIN_REQUESTS} WHERE user_uuid = $1 and organization_id = $2`
+    let result
+    if(client){
+        result = await client.query(queryString, [uuid, organization_id])
+    } else {
+        result = await query(queryString, [uuid, organization_id])
+    }
 
+    return result 
+}
 
 
 
@@ -196,5 +206,6 @@ module.exports = {
     deleteMemberFromOrganization,
     editOrganization,
     deleteAllMembersOfOrganization,
-    deleteOrganization
+    deleteOrganization,
+    deleteJoinRequest
 }
