@@ -67,7 +67,7 @@ const getUserByEmailHandler = async (email) => {
     }
 
     const joinResult = getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
-    if (joinResult.rows[0]) {
+    if (joinResult.rows && joinResult.rows[0]) {
         result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
     }
 
