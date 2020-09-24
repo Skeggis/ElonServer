@@ -66,10 +66,10 @@ const getUserByEmailHandler = async (email) => {
         }
     }
 
-    const joinResult = getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
-    if (joinResult.rows.length > 0) {
-        result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
-    }
+    // const joinResult = getRequestToJoinOrganizationFromUUID(result.rows[0].uuid)
+    // if (joinResult.rows.length > 0) {
+    //     result.rows[0].requestOrganization = getOrganizationFromId(joinResult.rows[0].organization_id)
+    // }
 
     return {
         success: true,
